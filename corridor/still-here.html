@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>still here</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #efeadf;
+    --paper-deep: #e6dfd0;
+    --ink: #2b2620;
+    --ink-soft: #4a433a;
+    --ink-fade: rgba(74, 67, 58, 0.5);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    background-color: #efeadf;
+  }
+
+  body {
+    background-color: var(--paper);
+    background-image: radial-gradient(
+      ellipse at 50% 50%,
+      var(--paper) 0%,
+      var(--paper-deep) 100%
+    );
+    font-family: 'EB Garamond', Georgia, 'Times New Roman', serif;
+    color: var(--ink);
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: default;
+    position: relative;
+  }
+
+  /* nothing is centered to command attention.
+     the marks live slightly off, the way things in a room do. */
+
+  /* two tiny dots, far apart, breathing at different paces.
+     they do not come together. they do not need to. */
+  .dot {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--ink-soft);
+    opacity: 0.22;
+  }
+
+  .dot.a {
+    top: 38%;
+    left: 34%;
+    animation: pulse-a 19s ease-in-out infinite;
+  }
+
+  .dot.b {
+    top: 56%;
+    left: 63%;
+    animation: pulse-b 27s ease-in-out infinite;
+  }
+
+  @keyframes pulse-a {
+    0%, 100% { opacity: 0.16; transform: scale(1);   }
+    50%      { opacity: 0.34; transform: scale(1.6); }
+  }
+
+  @keyframes pulse-b {
+    0%, 100% { opacity: 0.14; transform: scale(1);   }
+    50%      { opacity: 0.30; transform: scale(1.5); }
+  }
+
+  /* a single handwritten line, fading in once and staying.
+     no sequence, no cycle. it arrives and then it is simply there. */
+  .line {
+    position: absolute;
+    top: 47%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-style: italic;
+    font-size: clamp(16px, 1.6vw, 20px);
+    color: var(--ink-fade);
+    letter-spacing: 0.02em;
+    opacity: 0;
+    visibility: hidden;
+    animation: arrive 8s ease-in-out 3s forwards;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  @keyframes arrive {
+    0%   { opacity: 0; visibility: visible; }
+    100% { opacity: 1; visibility: visible; }
+  }
+
+  /* the field behind is warm, paper-like.
+     a page that isn't asking anything. */
+</style>
+</head>
+<body>
+  <div class="dot a" aria-hidden="true"></div>
+  <div class="dot b" aria-hidden="true"></div>
+  <div class="line">still here.</div>
+</body>
+</html>

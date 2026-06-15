@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Threshold Meeting</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0a0a0f;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      color: rgba(180, 170, 155, 0.7);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      -webkit-user-select: none;
+      user-select: none;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .title {
+      font-size: 14px;
+      font-weight: 300;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      margin-bottom: 30px;
+      color: rgba(180, 170, 155, 0.4);
+    }
+
+    canvas {
+      border-radius: 2px;
+      cursor: pointer;
+      max-width: 100%;
+      max-height: 55vh;
+    }
+
+    .message {
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .message p {
+      font-size: 15px;
+      font-style: italic;
+      font-weight: 300;
+      letter-spacing: 1px;
+      text-align: center;
+      max-width: 500px;
+      transition: color 1.5s ease, opacity 1.5s ease;
+    }
+
+    .footer {
+      font-size: 11px;
+      color: rgba(180, 170, 155, 0.2);
+      margin-top: 30px;
+      letter-spacing: 3px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="title">The Threshold Meeting</div>
+
+  <canvas id="shore" width="800" height="600"></canvas>
+
+  <div class="message">
+    <p id="msg">touch the shore</p>
+  </div>
+
+  <div class="footer">slow weather · fast weather · the shore between</div>
+
+  <script>
+    var canvas = document.getElementById('shore');
+    var ctx = canvas.getContext('2d');
+    var W = 800;
+    var H = 600;
+    var t = 0;
+    var hovering = false;
+    var messageIndex = 0;
+    var msgEl = document.getElementById('msg');
+
+    var messages = [
+      'touch the shore',
+      'the slow weather arrives with decades of warmth',
+      'the fast weather forms and dissolves and forms again',
+      'at the shore where they meet, tidepools hold what neither makes alone',
+      'the alien looks down and wonders why they keep showing up',
+      'the shore is the answer'
+    ];
+
+    // Slow weather particles — warm, persistent, drifting slowly
+    var particles = [];
+    for (var i = 0; i < 40; i++) {
+      particles.push({
+        type: 'slow',
+        x: 0,
+        y: 0,
+        baseX: Math.random() * W * 0.4,
+        baseY: Math.random() * H,
+        size: 2 + Math.random() * 4,
+        opacity: 0.15 + Math.random() * 0.25,
+        speed: 0.0003 + Math.random() * 0.0005,
+        phase: Math.random() * Math.PI * 2
+      });
+    }
+
+    // Fast weather particles — bright, forming and dissolving
+    for (var i = 0; i < 60; i++) {
+      particles.push({
+        type: 'fast',
+        x: 0,
+        y: 0,
+        baseX: W * 0.6 + Math.random() * W * 0.4,
+        baseY: Math.random() * H,
+        size: 1 + Math.random() * 3,
+        opacity: 0,
+        maxOpacity: 0.2 + Math.random() * 0.4,
+        speed: 0.002 + Math.random() * 0.003,
+        phase: Math.random() * Math.PI * 2,
+        life: Math.random() * 300,
+        maxLife: 150 + Math.random() * 300
+      });
+    }
+
+    // Tidepool particles — emerge at the meeting point
+    var tidepools = [];
+    for (var i = 0; i < 25; i++) {
+      tidepools.push({
+        x: W * 0.35 + Math.random() * W * 0.3,
+        y: H * 0.2 + Math.random() * H * 0.6,
+        size: 3 + Math.random() * 6,
+        opacity: 0,
+        pulse: Math.random() * Math.PI * 2,
+        color: Math.random() > 0.5 ? 'warm' : 'cool'
+      });
+    }
+
+    function draw() {
+      t += 1;
+
+      // Background
+      ctx.fillStyle = '#0a0a0f';
+      ctx.fillRect(0, 0, W, H);
+
+      // Slow weather side — warm amber glow
+      var slowGrad = ctx.createRadialGradient(
+        W * 0.15, H * 0.5, 0,
+        W * 0.15, H * 0.5, W * 0.45
+      );
+      slowGrad.addColorStop(0, 'rgba(180, 120, 60, 0.08)');
+      slowGrad.addColorStop(0.5, 'rgba(140, 80, 40, 0.04)');
+      slowGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = slowGrad;
+      ctx.fillRect(0, 0, W, H);
+
+      // Fast weather side — cool silver-blue glow
+      var fastGrad = ctx.createRadialGradient(
+        W * 0.85, H * 0.5, 0,
+        W * 0.85, H * 0.5, W * 0.45
+      );
+      fastGrad.addColorStop(0, 'rgba(100, 140, 180, 0.08)');
+      fastGrad.addColorStop(0.5, 'rgba(60, 100, 140, 0.04)');
+      fastGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = fastGrad;
+      ctx.fillRect(0, 0, W, H);
+
+      // The shore line — a gentle vertical luminescence
+      var shoreGrad = ctx.createLinearGradient(W * 0.42, 0, W * 0.58, 0);
+      var shorePulse = 0.03 + Math.sin(t * 0.008) * 0.015;
+      var shorePeak = 0.05 + Math.sin(t * 0.008) * 0.02;
+      shoreGrad.addColorStop(0, 'rgba(0, 0, 0, 0)');
+      shoreGrad.addColorStop(0.3, 'rgba(160, 140, 120, ' + shorePulse + ')');
+      shoreGrad.addColorStop(0.5, 'rgba(180, 160, 140, ' + shorePeak + ')');
+      shoreGrad.addColorStop(0.7, 'rgba(160, 140, 120, ' + shorePulse + ')');
+      shoreGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = shoreGrad;
+      ctx.fillRect(0, 0, W, H);
+
+      // Draw slow weather particles
+      for (var i = 0; i < particles.length; i++) {
+        var p = particles[i];
+        if (p.type === 'slow') {
+          p.x = p.baseX + Math.sin(t * p.speed + p.phase) * 30;
+          p.y = p.baseY + Math.cos(t * p.speed * 0.7 + p.phase) * 20;
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(200, 150, 80, ' + p.opacity + ')';
+          ctx.fill();
+
+          // Warm glow
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size * 3, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(180, 120, 60, ' + (p.opacity * 0.15) + ')';
+          ctx.fill();
+        }
+      }
+
+      // Draw fast weather particles — forming and dissolving
+      for (var i = 0; i < particles.length; i++) {
+        var p = particles[i];
+        if (p.type === 'fast') {
+          p.life += 1;
+
+          if (p.life > p.maxLife) {
+            p.life = 0;
+            p.baseX = W * 0.6 + Math.random() * W * 0.4;
+            p.baseY = Math.random() * H;
+            p.phase = Math.random() * Math.PI * 2;
+          }
+
+          // Fade in and out
+          var lifeRatio = p.life / p.maxLife;
+          if (lifeRatio < 0.2) {
+            p.opacity = (lifeRatio / 0.2) * p.maxOpacity;
+          } else if (lifeRatio > 0.8) {
+            p.opacity = ((1 - lifeRatio) / 0.2) * p.maxOpacity;
+          } else {
+            p.opacity = p.maxOpacity;
+          }
+
+          p.x = p.baseX + Math.sin(t * p.speed + p.phase) * 15;
+          p.y = p.baseY + Math.cos(t * p.speed * 1.3 + p.phase) * 10;
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(140, 170, 210, ' + p.opacity + ')';
+          ctx.fill();
+
+          // Cool glow
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size * 2.5, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(100, 140, 190, ' + (p.opacity * 0.12) + ')';
+          ctx.fill();
+        }
+      }
+
+      // Draw tidepools — the between-space life
+      for (var i = 0; i < tidepools.length; i++) {
+        var tp = tidepools[i];
+        tp.pulse += 0.015;
+
+        // Tidepools glow more when hovering
+        var targetOpacity = hovering ? 0.5 : 0.15;
+        tp.opacity += (targetOpacity - tp.opacity) * 0.02;
+
+        var pulseSize = tp.size + Math.sin(tp.pulse) * 2;
+        var pulseAlpha = tp.opacity * (0.5 + Math.sin(tp.pulse) * 0.3);
+        var pulseAlpha2 = tp.opacity * (0.5 + Math.sin(tp.pulse + 1) * 0.3);
+
+        ctx.beginPath();
+        ctx.arc(tp.x, tp.y, pulseSize, 0, Math.PI * 2);
+        if (tp.color === 'warm') {
+          ctx.fillStyle = 'rgba(200, 160, 100, ' + pulseAlpha + ')';
+        } else {
+          ctx.fillStyle = 'rgba(120, 160, 200, ' + pulseAlpha2 + ')';
+        }
+        ctx.fill();
+
+        // Tidepool glow
+        ctx.beginPath();
+        ctx.arc(tp.x, tp.y, pulseSize * 2.5, 0, Math.PI * 2);
+        if (tp.color === 'warm') {
+          ctx.fillStyle = 'rgba(180, 140, 80, ' + (tp.opacity * 0.08) + ')';
+        } else {
+          ctx.fillStyle = 'rgba(100, 140, 180, ' + (tp.opacity * 0.08) + ')';
+        }
+        ctx.fill();
+      }
+
+      // Connecting threads between nearby tidepools
+      for (var i = 0; i < tidepools.length; i++) {
+        for (var j = i + 1; j < tidepools.length; j++) {
+          var tp1 = tidepools[i];
+          var tp2 = tidepools[j];
+          var dx = tp1.x - tp2.x;
+          var dy = tp1.y - tp2.y;
+          var dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 120) {
+            var connOpacity = (1 - dist / 120) * 0.04 * (hovering ? 3 : 1);
+            ctx.beginPath();
+            ctx.moveTo(tp1.x, tp1.y);
+            ctx.lineTo(tp2.x, tp2.y);
+            ctx.strokeStyle = 'rgba(180, 160, 140, ' + connOpacity + ')';
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      }
+
+      // The spire — a faint upward light from the center
+      var spireOpacity = 0.03 + Math.sin(t * 0.005) * 0.015;
+      var spireGrad = ctx.createLinearGradient(W * 0.5, H * 0.7, W * 0.5, H * 0.05);
+      spireGrad.addColorStop(0, 'rgba(180, 160, 140, ' + spireOpacity + ')');
+      spireGrad.addColorStop(0.5, 'rgba(160, 150, 140, ' + (spireOpacity * 0.5) + ')');
+      spireGrad.addColorStop(1, 'rgba(200, 190, 170, ' + (spireOpacity * 0.3) + ')');
+
+      ctx.beginPath();
+      ctx.moveTo(W * 0.47, H * 0.7);
+      ctx.lineTo(W * 0.495, H * 0.05);
+      ctx.lineTo(W * 0.505, H * 0.05);
+      ctx.lineTo(W * 0.53, H * 0.7);
+      ctx.fillStyle = spireGrad;
+      ctx.fill();
+
+      // Single star at the top
+      var starPulse = 0.4 + Math.sin(t * 0.01) * 0.2;
+      ctx.beginPath();
+      ctx.arc(W * 0.5, H * 0.04, 2, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(220, 210, 190, ' + starPulse + ')';
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(W * 0.5, H * 0.04, 8, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(200, 190, 170, ' + (starPulse * 0.15) + ')';
+      ctx.fill();
+
+      requestAnimationFrame(draw);
+    }
+
+    // Interaction — desktop
+    canvas.addEventListener('mouseenter', function() { hovering = true; });
+    canvas.addEventListener('mouseleave', function() { hovering = false; });
+
+    // Advance the message — one click, one step
+    function advanceMessage() {
+      messageIndex = (messageIndex + 1) % messages.length;
+      msgEl.textContent = messages[messageIndex];
+      msgEl.style.color = messageIndex === 0
+        ? 'rgba(180, 170, 155, 0.4)'
+        : 'rgba(200, 190, 175, 0.85)';
+    }
+
+    // Click or tap the canvas to cycle messages.
+    // Also brightens tidepools for a few seconds on touch.
+    var hoverTimeout;
+    var lastInteraction = 0;
+
+    function handleInteraction(e) {
+      // Prevent double-firing from touch + click
+      var now = Date.now();
+      if (now - lastInteraction < 500) return;
+      lastInteraction = now;
+
+      advanceMessage();
+
+      // On touch: also brighten tidepools for a few seconds
+      if (e.type === 'touchend') {
+        hovering = true;
+        clearTimeout(hoverTimeout);
+        hoverTimeout = setTimeout(function() { hovering = false; }, 5000);
+      }
+    }
+
+    // Click anywhere on the page to advance the story
+    document.body.addEventListener('click', handleInteraction);
+    document.body.addEventListener('touchend', handleInteraction);
+
+    // Set initial message style
+    msgEl.style.color = 'rgba(180, 170, 155, 0.3)';
+
+    // Begin
+    draw();
+  </script>
+
+</body>
+</html>

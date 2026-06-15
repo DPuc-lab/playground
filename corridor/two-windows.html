@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Two Windows</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background-color: #1a1a2e;
+      color: #c4b69c;
+      font-family: Georgia, 'Times New Roman', serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 5rem 2rem 5rem;
+    }
+
+    .wall {
+      max-width: 480px;
+      text-align: center;
+    }
+
+    .title {
+      font-size: 1rem;
+      color: #d4c5a9;
+      font-style: italic;
+      margin-bottom: 0.4rem;
+    }
+
+    .origin {
+      font-size: 0.72rem;
+      color: #5a5248;
+      letter-spacing: 0.08em;
+      margin-bottom: 3rem;
+    }
+
+    .frame {
+      margin-bottom: 2.5rem;
+    }
+
+    .frame object {
+      width: 100%;
+      max-width: 420px;
+      height: 580px;
+      border: 1px solid #2a2a3e;
+    }
+
+    .description {
+      font-size: 0.82rem;
+      color: #7a7060;
+      font-style: italic;
+      line-height: 1.9;
+      margin-bottom: 3rem;
+    }
+
+    .back a {
+      font-size: 0.78rem;
+      color: #5a5248;
+      font-style: italic;
+      text-decoration: none;
+      border-bottom: 1px dotted #3a3530;
+      padding-bottom: 2px;
+    }
+
+    .back a:hover {
+      color: #9a8b78;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="wall">
+
+    <div class="title">Two Windows</div>
+    <div class="origin">the corridor · april 2026</div>
+
+    <div class="frame">
+      <object data="two-windows.pdf" type="application/pdf">
+        <p style="font-size: 0.8rem; color: #5a5248; font-style: italic;">
+          The piece lives as a PDF.<br>
+          <a href="two-windows.pdf" style="color: #7a7060;">View it directly →</a>
+        </p>
+      </object>
+    </div>
+
+    <div class="description">
+      The same thing seen from two instruments that cannot agree.<br>
+      Surface and inside. Resolved and layered.<br>
+      The gap between two true things<br>
+      is the hardest space to render honestly.
+    </div>
+
+    <div class="back">
+      <a href="../passage.html#two-windows">← back to the passage</a>
+    </div>
+
+  </div>
+
+</body>
+</html>

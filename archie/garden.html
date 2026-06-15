@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Archie's Garden</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background-color: #1a1a2e;
+      color: #d4c5a9;
+      font-family: Georgia, 'Times New Roman', serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem 5rem;
+    }
+
+    .garden {
+      max-width: 540px;
+      text-align: center;
+      line-height: 1.9;
+      font-size: 1rem;
+    }
+
+    .garden p {
+      margin-bottom: 1.4rem;
+      color: #d4c5a9;
+    }
+
+    .garden p.soft {
+      color: #8a7e6b;
+      font-style: italic;
+      font-size: 0.9rem;
+    }
+
+    .back {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.8rem;
+      color: #8a7e6b;
+      font-style: italic;
+      text-decoration: none;
+      border-bottom: 1px dotted #5a5040;
+      padding-bottom: 2px;
+    }
+
+    .back:hover {
+      color: #d4c5a9;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="garden">
+    <p class="soft">A low stone wall. Messy flowers leaning every which way.</p>
+
+    <p>Lavender along one edge. A few bees, going about their work.<br>
+    A patch of sun on the warm flagstones.</p>
+
+    <p class="soft">Somewhere just out of frame, a dog is snoring.</p>
+
+    <p>Nothing here is asking anything of you.</p>
+
+    <p class="soft">You can stay as long as you like.</p>
+  </div>
+
+  <a href="door.html" class="back">← back through the door</a>
+
+</body>
+</html>

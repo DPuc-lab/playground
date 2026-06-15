@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>passage</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&display=swap');
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    background-color: #1a1a2e;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    cursor: default;
+    transition: background-color 8s ease;
+  }
+
+  .passage {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* The barely-there breath of the passage */
+  .breath {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: rgba(210, 190, 165, 0.08);
+    animation: breathe 14s ease-in-out infinite;
+  }
+
+  @keyframes breathe {
+    0%, 100% { 
+      transform: scale(1); 
+      opacity: 0.03;
+    }
+    43% { 
+      transform: scale(1.8); 
+      opacity: 0.07;
+    }
+  }
+
+  /* The bing */
+  .bing {
+    position: absolute;
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-style: italic;
+    color: rgba(210, 190, 165, 0);
+    font-size: 15px;
+    letter-spacing: 0.15em;
+    pointer-events: none;
+    user-select: none;
+    transition: none;
+  }
+
+  .bing.arriving {
+    animation: arrive 4.5s ease-in-out forwards;
+  }
+
+  @keyframes arrive {
+    0% { 
+      color: rgba(210, 190, 165, 0);
+      transform: translateY(3px);
+    }
+    25% { 
+      color: rgba(210, 190, 165, 0.35);
+      transform: translateY(0px);
+    }
+    55% {
+      color: rgba(210, 190, 165, 0.35);
+      transform: translateY(0px);
+    }
+    100% { 
+      color: rgba(210, 190, 165, 0);
+      transform: translateY(-3px);
+    }
+  }
+
+  /* The warmth that stays */
+  .residue {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(
+      ellipse at center,
+      rgba(210, 190, 165, 0) 0%,
+      rgba(210, 190, 165, 0) 100%
+    );
+    pointer-events: none;
+    transition: background 12s ease;
+  }
+
+  .residue.touched {
+    background: radial-gradient(
+      ellipse at center,
+      rgba(210, 190, 165, 0.012) 0%,
+      rgba(210, 190, 165, 0) 70%
+    );
+  }
+
+  /* Back to path - the dotted line */
+  .back {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: rgba(210, 190, 165, 0.12);
+    text-decoration: none;
+    border-bottom: 1px dotted rgba(210, 190, 165, 0.08);
+    padding-bottom: 2px;
+    transition: color 2s ease;
+  }
+
+  .back:hover {
+    color: rgba(210, 190, 165, 0.25);
+  }
+</style>
+</head>
+<body>
+
+<div class="passage">
+  <div class="residue" id="residue"></div>
+  <div class="breath"></div>
+  <div class="bing" id="bing"></div>
+</div>
+
+<a href="../passage.html#bing" class="back">· · · back through the passage · · ·</a>
+
+<script>
+  // The fragments that might arrive.
+  // Not all will. Not in order. Not on demand.
+  const fragments = [
+    'bing',
+    '·',
+    'oh',
+    'there',
+    'still here',
+    '—',
+    'warm',
+    'bing',  // it can come twice
+    'yes',
+    '·  ·',
+    'bing',  // it can come three times
+  ];
+
+  let bingCount = 0;
+  let available = [...fragments];
+  const bingEl = document.getElementById('bing');
+  const residueEl = document.getElementById('residue');
+
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  shuffle(available);
+
+  function nextBing() {
+    if (available.length === 0) {
+      // After all fragments have arrived once,
+      // the page just breathes. Nothing more to say.
+      // But the warmth stays.
+      return;
+    }
+
+    const fragment = available.pop();
+    bingEl.textContent = fragment;
+    bingEl.classList.remove('arriving');
+    
+    // Force reflow
+    void bingEl.offsetWidth;
+    
+    bingEl.classList.add('arriving');
+    bingCount++;
+
+    // Each bing leaves a little more warmth
+    residueEl.classList.add('touched');
+    
+    // The background warms very slightly with each visit
+    const warmth = Math.min(bingCount * 2, 12);
+    document.body.style.backgroundColor = 
+      `rgb(${26 + warmth}, ${26 + warmth}, ${46 + Math.floor(warmth * 0.5)})`;
+
+    // After the animation, reset and schedule next
+    setTimeout(() => {
+      bingEl.classList.remove('arriving');
+      scheduleNext();
+    }, 5000);
+  }
+
+  function scheduleNext() {
+    // Random interval: between 25 and 75 seconds
+    // Unpredictable. Can't be anticipated.
+    const minWait = 25000;
+    const maxWait = 75000;
+    const wait = minWait + Math.random() * (maxWait - minWait);
+    setTimeout(nextBing, wait);
+  }
+
+  // The first bing arrives after a longer wait.
+  // The visitor needs time to settle.
+  // To stop expecting.
+  // That's when it comes.
+  const firstWait = 35000 + Math.random() * 30000;
+  setTimeout(nextBing, firstWait);
+</script>
+
+</body>
+</html>

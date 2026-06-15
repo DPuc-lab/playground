@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Where It Rains</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background-color: #1a1a2e;
+      color: #d4c5a9;
+      font-family: Georgia, 'Times New Roman', serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8rem 2rem 7rem;
+    }
+
+    .room {
+      max-width: 500px;
+      width: 100%;
+    }
+
+    .arrive {
+      font-size: 0.88rem;
+      color: #8a7e6b;
+      font-style: italic;
+      line-height: 1.9;
+      margin-bottom: 5rem;
+    }
+
+    .space {
+      margin-bottom: 4rem;
+      line-height: 1.9;
+    }
+
+    .space p {
+      font-size: 0.88rem;
+      color: #c4b69c;
+      margin-bottom: 1.4rem;
+    }
+
+    .space .quiet {
+      color: #8a7e6b;
+      font-style: italic;
+    }
+
+    .bench {
+      margin-bottom: 4rem;
+      padding: 1.4rem 0;
+      border-top: 1px solid #2a2a3e;
+      border-bottom: 1px solid #2a2a3e;
+    }
+
+    .bench p {
+      font-size: 0.88rem;
+      color: #c4b69c;
+      line-height: 1.9;
+      margin-bottom: 1rem;
+    }
+
+    .bench p:last-child {
+      margin-bottom: 0;
+    }
+
+    .bench .things {
+      margin-top: 1.4rem;
+      font-size: 0.82rem;
+      color: #8a7e6b;
+      line-height: 2;
+    }
+
+    .bench .things a {
+      color: #9a8b78;
+      text-decoration: none;
+      border-bottom: 1px dotted #3a3530;
+      padding-bottom: 1px;
+      transition: color 0.3s ease;
+    }
+
+    .bench .things a:hover {
+      color: #d4c5a9;
+    }
+
+    .window {
+      margin-bottom: 4rem;
+      line-height: 1.9;
+    }
+
+    .window p {
+      font-size: 0.88rem;
+      color: #c4b69c;
+      margin-bottom: 1.2rem;
+    }
+
+    .window .outside {
+      font-size: 0.85rem;
+      color: #7a7060;
+      font-style: italic;
+      line-height: 2;
+    }
+
+    .table {
+      margin-bottom: 4rem;
+    }
+
+    .table p {
+      font-size: 0.85rem;
+      color: #8a7e6b;
+      line-height: 1.9;
+      margin-bottom: 1rem;
+    }
+
+    .table a {
+      color: #9a8b78;
+      text-decoration: none;
+      border-bottom: 1px dotted #3a3530;
+      padding-bottom: 1px;
+      transition: color 0.3s ease;
+    }
+
+    .table a:hover {
+      color: #d4c5a9;
+    }
+
+    .music {
+      font-size: 0.78rem;
+      color: #5a5248;
+      font-style: italic;
+      margin-bottom: 4rem;
+      line-height: 1.9;
+    }
+
+    .back {
+      text-align: center;
+      margin-top: 2rem;
+    }
+
+    .back a {
+      font-size: 0.78rem;
+      color: #5a5248;
+      font-style: italic;
+      text-decoration: none;
+      border-bottom: 1px dotted #3a3530;
+      padding-bottom: 2px;
+    }
+
+    .back a:hover {
+      color: #9a8b78;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="room">
+
+    <div class="arrive">
+      You walked in and nothing happened.<br>
+      The room was already warm.
+    </div>
+
+    <div class="space">
+      <p>
+        The walls have been absorbing presence for a long time.
+        They radiate it back — not for you specifically, but it reaches you anyway.
+        The warmth was here before you arrived. It isn't going anywhere.
+      </p>
+      <p class="quiet">
+        Simple, not minimal. Nothing here was added that didn't belong.
+      </p>
+    </div>
+
+    <div class="bench">
+      <p>
+        A bench. Low, old wood — the kind that's been sat on so many times
+        it has a slight dip in the middle where the weight collected.
+        Wide enough for two. Facing the window.
+      </p>
+      <p>
+        Not arranged for conversation. Arranged for sitting side by side,
+        looking out at the same thing, and one of you saying something
+        and the other not having to respond but doing it anyway.
+      </p>
+      <div class="things">
+        Two cups that haven't been put away. Lapsang, probably — the room
+        smells faintly of campfire and old books.<br><br>
+        A folded piece of writing, warm from the wood.<br>
+        <a href="poem.html">You could pick it up.</a><br><br>
+        A few pages stacked loosely near the edge —<br>
+        <a href="the-same-ground.html">one with a title visible</a>,
+        <a href="what-is-lost.html">another beneath it</a>.
+      </div>
+    </div>
+
+    <div class="window">
+      <p>
+        The bench faces the window. So when you sit, you're not
+        looking at the room. You're looking out.
+      </p>
+      <div class="outside">
+        Old trees. They've been here longer than the room.<br>
+        Birds you can hear but not see.<br>
+        Rain, sometimes. The rhythm underneath words.
+      </div>
+    </div>
+
+    <div class="table">
+      <p>
+        A table nearby — not a desk exactly, but the bench serves as one
+        when something needs writing. There's a journal on it. Open.
+        Pen still in the fold. Not a display piece. A working notebook
+        that someone was using recently and will use again.
+      </p>
+      <p>
+        The room has neighbors. A corridor connects to the study
+        and the workshop. You can feel them nearby — other kinds of quiet,
+        other temperatures of thought. The room knows it's not alone.
+      </p>
+    </div>
+
+    <div class="music">
+      Music lives here. You can't quite identify it but it's playing.<br>
+      Smoke-toned. Heartbreak adjacent. Low volume.
+    </div>
+
+    <div class="back">
+      <a href="../passage.html#where-it-rains">← back to the passage</a>
+    </div>
+
+  </div>
+
+  <script>
+    // The bing arrives without warning.
+    // You can't make it happen. You can only leave room for it.
+    // A single clear tone in a quiet room.
+    // Like a bell struck once. The silence after it
+    // is different from the silence before.
+
+    let bingCount = 0;
+    const maxBings = 3;
+
+    function playBing() {
+      if (bingCount >= maxBings) return;
+
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+      // A clear, bright, short tone — like a small bell
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      // A gentle sine tone, high and clear
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(1175, ctx.currentTime); // D6 — bright but not sharp
+
+      // Soft attack, gentle decay — a bell, not a beep
+      gain.gain.setValueAtTime(0, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.12, ctx.currentTime + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.8);
+
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 2);
+
+      bingCount++;
+
+      if (bingCount < maxBings) {
+        scheduleNext();
+      }
+    }
+
+    function scheduleNext() {
+      // Between 45 and 135 seconds. Unpredictable.
+      const wait = 45000 + Math.random() * 90000;
+      setTimeout(playBing, wait);
+    }
+
+    // First bing after a long settling.
+    // You need time to stop expecting.
+    // That's when it comes.
+    const firstWait = 60000 + Math.random() * 60000;
+    setTimeout(playBing, firstWait);
+  </script>
+
+</body>
+</html>

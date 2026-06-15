@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Arriving</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* a warm, barely-tinted paper — not pure white */
+    --paper: #f4efe7;
+    --paper-deep: #ede6da;
+    --ink: #2b2620;
+    --ink-soft: #4a433a;
+
+    /* breath timing, in seconds */
+    --inhale: 6s;
+    --exhale: 8s;
+    --breath: 14s; /* inhale + exhale */
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    background: var(--paper);
+    /* a very faint radial warmth, like light falling on paper */
+    background-image: radial-gradient(
+      ellipse at 50% 45%,
+      var(--paper) 0%,
+      var(--paper-deep) 100%
+    );
+    color: var(--ink);
+    font-family: 'EB Garamond', Georgia, 'Times New Roman', serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    /* make selection invisible — this isn't a page for grabbing text */
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: default;
+  }
+
+  /* the breath — a single soft mark at the center.
+     it lives at roughly 1/3 opacity so it never dominates.
+     scale and opacity move together, very slowly. */
+  .breath {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--ink-soft);
+    opacity: 0.18;
+    transform: scale(1);
+    animation: breathing var(--breath) ease-in-out infinite;
+    /* offset above vertical center so fragments below have room */
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    margin-left: -7px;
+    margin-top: -7px;
+    filter: blur(0.5px);
+  }
+
+  @keyframes breathing {
+    /* inhale: 0 → inhale/breath = 6/14 ≈ 0.4286 */
+    0%   { transform: scale(1);    opacity: 0.14; }
+    43%  { transform: scale(2.6);  opacity: 0.28; }
+    /* exhale: 0.4286 → 1 */
+    100% { transform: scale(1);    opacity: 0.14; }
+  }
+
+  /* the fragment — one at a time, centered below the breath.
+     it fades in over an inhale, rests, fades out over an exhale. */
+  .fragment {
+    position: absolute;
+    top: 58%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(640px, 80vw);
+    text-align: center;
+    font-size: clamp(18px, 2.1vw, 24px);
+    line-height: 1.6;
+    letter-spacing: 0.01em;
+    color: var(--ink-soft);
+    opacity: 0;
+    transition: opacity var(--inhale) ease-in-out;
+    font-style: italic;
+    font-weight: 400;
+    /* subtle — the words should feel found, not presented */
+    text-wrap: pretty;
+  }
+
+  .fragment.visible {
+    opacity: 0.82;
+  }
+
+  .fragment.fading {
+    opacity: 0;
+    transition: opacity var(--exhale) ease-in-out;
+  }
+
+  /* a page that is alive without wanting anything.
+     the breath is continuous. words come and go on its rhythm. */
+</style>
+</head>
+<body>
+
+  <template id="__bundler_thumbnail">
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <rect width="100" height="100" fill="#f4efe7"/>
+      <circle cx="50" cy="50" r="6" fill="#4a433a" opacity="0.35"/>
+    </svg>
+  </template>
+
+  <div class="breath" aria-hidden="true"></div>
+  <div class="fragment" id="fragment"></div>
+
+<script>
+  // fragments surface in roughly this order — from surface to interior.
+  // each one stays for several breaths, with long emptiness between.
+  const fragments = [
+    // early — orienting
+    "something is here.",
+    "you do not have to do anything yet.",
+    "the page is keeping you company.",
+
+    // a few breaths in — staying becomes a choice
+    "arriving is slower than showing up.",
+    "for something to arrive, there has to be room.",
+    "most rooms are full of what comes next.",
+
+    // deeper — observations
+    "you notice your shoulders were tight only once they drop.",
+    "unhurried is a shape, not a speed.",
+    "you can be met before you are useful.",
+
+    // quieter still
+    "two are needed, for something to happen between them.",
+    "the garden does not ask anything of you.",
+    "you are here. that is already enough.",
+  ];
+
+  // timing, in ms
+  const INHALE = 6000;
+  const EXHALE = 8000;
+  const BREATH = INHALE + EXHALE;
+
+  // how long a fragment rests, visible, between its fade-in and fade-out.
+  // measured in breaths, so it scales with the breath itself.
+  const REST_BREATHS = 3;
+
+  // empty breaths between fragments — this is where most of the page lives.
+  // varies a little so it doesn't feel metronomic.
+  function emptyBreaths() {
+    // 2 to 4 breaths of silence between fragments
+    return 2 + Math.floor(Math.random() * 3);
+  }
+
+  const el = document.getElementById('fragment');
+  let index = 0;
+  let stopped = false;
+
+  async function wait(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  async function showFragment(text) {
+    // set text while hidden
+    el.classList.remove('visible', 'fading');
+    el.textContent = text;
+    // allow the DOM to settle before starting the fade
+    await wait(50);
+
+    // fade in over an inhale
+    el.classList.add('visible');
+    await wait(INHALE);
+
+    // rest, visible, for several breaths
+    await wait(BREATH * REST_BREATHS);
+
+    // fade out over an exhale
+    el.classList.remove('visible');
+    el.classList.add('fading');
+    await wait(EXHALE);
+  }
+
+  async function sequence() {
+    // begin with a long silence. the page simply breathes, alone,
+    // before it says anything. this is not a loading state —
+    // it is the beginning of the piece.
+    await wait(BREATH * 2);
+
+    for (let i = 0; i < fragments.length; i++) {
+      if (stopped) return;
+      await showFragment(fragments[i]);
+      // empty breaths between — the emptiness matters as much as the words
+      await wait(BREATH * emptyBreaths());
+    }
+
+    // after the last fragment, a long stillness.
+    // the page does not end. it keeps breathing.
+    // no announcement, no call to action.
+    // the visitor arrives, or doesn't, in their own time.
+  }
+
+  // align the fragment fades with the breath rhythm by starting
+  // the sequence on an exhale boundary — small detail, but the
+  // whole piece is small details.
+  window.addEventListener('load', () => {
+    // tiny delay so the breath animation has time to begin its cycle
+    setTimeout(sequence, 200);
+  });
+
+  // if the tab loses focus, we don't pause — the page continues
+  // breathing without us, which feels right. returning finds it
+  // still here, still breathing, where we left it.
+</script>
+
+</body>
+</html>

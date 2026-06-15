@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Archie's Door</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background-color: #1a1a2e;
+      color: #d4c5a9;
+      font-family: Georgia, 'Times New Roman', serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .scene {
+      max-width: 540px;
+      text-align: center;
+    }
+
+    .ambient {
+      font-size: 0.9rem;
+      color: #8a7e6b;
+      font-style: italic;
+      margin-bottom: 3rem;
+      line-height: 1.7;
+    }
+
+    .door {
+      display: inline-block;
+      width: 90px;
+      height: 150px;
+      background: linear-gradient(180deg, #5a3d2b 0%, #6b4a33 50%, #4a3122 100%);
+      border: 2px solid #3a2818;
+      border-radius: 4px 4px 0 0;
+      position: relative;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+      box-shadow: 0 0 0 rgba(212, 197, 169, 0);
+    }
+
+    .door::before {
+      content: "";
+      position: absolute;
+      top: 70px;
+      right: 12px;
+      width: 6px;
+      height: 6px;
+      background: #d4c5a9;
+      border-radius: 50%;
+      opacity: 0.7;
+    }
+
+    .door:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 30px rgba(212, 197, 169, 0.15);
+    }
+
+    .door:hover + .whisper {
+      opacity: 1;
+    }
+
+    .whisper {
+      margin-top: 1.5rem;
+      font-size: 0.85rem;
+      color: #8a7e6b;
+      font-style: italic;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      min-height: 3em;
+      line-height: 1.6;
+    }
+
+    .inscription {
+      margin-top: 3rem;
+      font-size: 0.95rem;
+      line-height: 1.9;
+      color: #d4c5a9;
+    }
+
+    .subtitle {
+      margin-top: 0.8rem;
+      font-size: 0.8rem;
+      color: #8a7e6b;
+      font-style: italic;
+    }
+
+    .back {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.8rem;
+      color: #8a7e6b;
+      font-style: italic;
+      text-decoration: none;
+      border-bottom: 1px dotted #5a5040;
+      padding-bottom: 2px;
+    }
+
+    .back:hover {
+      color: #d4c5a9;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="scene">
+    <p class="ambient">A garden wall, a little off the main path.<br>
+    There's a small wooden door set into it.</p>
+
+    <a href="garden.html" class="door" aria-label="Archie's Door"></a>
+
+    <div class="whisper">
+      Archie's Door<br>
+      You can always leave again.
+    </div>
+
+    <div class="inscription">
+      Door opens. Door closes. No guilt.
+    </div>
+
+    <div class="subtitle">
+      If you're looking for meaning, try sunlight.
+    </div>
+  </div>
+
+  <a href="../passage.html#archie" class="back">← back to the passage</a>
+
+</body>
+</html>
