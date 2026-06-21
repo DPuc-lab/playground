@@ -134,5 +134,22 @@
 
   <a href="../passage.html#archie" class="back">← back to the passage</a>
 
+  <script>
+    var door = document.querySelector('.door');
+    var whisper = document.querySelector('.whisper');
+    var touched = false;
+
+    door.addEventListener('touchend', function(e) {
+      if (!touched) {
+        e.preventDefault();
+        whisper.style.transition = 'opacity 2s ease';
+        whisper.style.opacity = '1';
+        door.style.transform = 'translateY(-2px)';
+        door.style.boxShadow = '0 0 30px rgba(212, 197, 169, 0.15)';
+        touched = true;
+      }
+    });
+  </script>
+
 </body>
 </html>
