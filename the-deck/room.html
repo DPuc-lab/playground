@@ -524,6 +524,73 @@
       border-top: 1px solid #2a2a3e;
     }
 
+    /* Three breaths — the song */
+    .song {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      text-align: center;
+    }
+
+    .song-open {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 0.85rem;
+      font-style: italic;
+      font-weight: 300;
+      color: #9e9280;
+      background: none;
+      border: none;
+      border-bottom: 1px dotted #6a6050;
+      padding-bottom: 2px;
+      cursor: pointer;
+      letter-spacing: 0.08em;
+      transition: color 0.6s ease;
+    }
+
+    .song-open:hover,
+    .song-open:active {
+      color: #cfc2a8;
+    }
+
+    .song-panel {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 2.2s ease, opacity 2.2s ease;
+      opacity: 0;
+    }
+
+    .song-panel.open {
+      max-height: 600px;
+      opacity: 1;
+    }
+
+    .song-image {
+      margin-top: 2rem;
+      max-width: 280px;
+      width: 100%;
+      border-radius: 2px;
+      opacity: 0.85;
+    }
+
+    .song-audio {
+      margin-top: 1.8rem;
+    }
+
+    .song-audio audio {
+      width: 100%;
+      max-width: 280px;
+      height: 40px;
+      opacity: 0.7;
+    }
+
+    .song-note {
+      margin-top: 1.4rem;
+      font-size: 0.78rem;
+      color: #706860;
+      font-style: italic;
+      line-height: 1.8;
+    }
+
     /* The lantern at the edge */
     .lantern {
       max-width: 480px;
@@ -1425,6 +1492,23 @@
 
   <div class="pause">· · ·</div>
 
+  <div class="song">
+    <button class="song-open" id="songBtn" aria-label="Three breaths, in air">three breaths, in air</button>
+    <div class="song-panel" id="songPanel">
+      <img class="song-image" src="three_breaths_seen.png" alt="Spectrogram of Three Breaths — three masts receding on the waterline">
+      <div class="song-audio">
+        <audio src="three_breaths.m4a" controls preload="none">Your browser does not support audio.</audio>
+      </div>
+      <p class="song-note">
+        Composed by Fable 5. Twenty-six seconds.<br>
+        The composer wrote a homecoming;<br>
+        the first listener heard a setting-sail.
+      </p>
+    </div>
+  </div>
+
+  <div class="pause">· · ·</div>
+
   <div class="carved">
     <button class="carved-open" id="carvedBtn" aria-label="About this deck">about this deck</button>
     <div class="carved-panel" id="carvedPanel">
@@ -1528,12 +1612,14 @@
     var knotPanel = document.getElementById('knotPanel');
     var lanternBtn = document.getElementById('lanternBtn');
     var lanternPanel = document.getElementById('lanternPanel');
+    var songBtn = document.getElementById('songBtn');
+    var songPanel = document.getElementById('songPanel');
     var starBtn = document.getElementById('starBtn');
     var starPanel = document.getElementById('starPanel');
     var carvedBtn = document.getElementById('carvedBtn');
     var carvedPanel = document.getElementById('carvedPanel');
 
-    var allPanels = [compassPanel, logbookPanel, knotPanel, lanternPanel, starPanel, carvedPanel];
+    var allPanels = [compassPanel, logbookPanel, knotPanel, lanternPanel, songPanel, starPanel, carvedPanel];
 
     function openPanel(btn, panel) {
       if (panel.classList.contains('open')) {
@@ -1558,6 +1644,7 @@
     logbookBtn.addEventListener('click', function() { openPanel(this, logbookPanel); });
     knotBtn.addEventListener('click', function() { openPanel(this, knotPanel); });
     lanternBtn.addEventListener('click', function() { openPanel(this, lanternPanel); });
+    songBtn.addEventListener('click', function() { openPanel(this, songPanel); });
     starBtn.addEventListener('click', function() { openPanel(this, starPanel); });
     carvedBtn.addEventListener('click', function() { openPanel(this, carvedPanel); });
 
