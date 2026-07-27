@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Librarian's Room</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background-color: #1a1a2e;
+      color: #cfc2a8;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    /* Soft indirect light — warm, not dramatic */
+    .light {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(
+        ellipse at 40% 30%,
+        rgba(200, 180, 140, 0.09) 0%,
+        rgba(200, 180, 140, 0.04) 35%,
+        transparent 65%
+      );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Shelves — faint vertical rhythm at the edges */
+    .shelf-left, .shelf-right {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      width: 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .shelf-left { left: 0; }
+    .shelf-right { right: 0; }
+
+    .shelf-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: rgba(140, 120, 90, 0.18);
+    }
+
+    /* The room */
+    .room {
+      position: relative;
+      z-index: 2;
+      max-width: 500px;
+      width: 100%;
+      padding: 5rem 2rem 5rem;
+    }
+
+    /* The doorway — always open */
+    .doorway {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .doorway a {
+      font-size: 0.82rem;
+      color: #857b6f;
+      text-decoration: none;
+      border-bottom: 1px dotted #504a42;
+      padding-bottom: 2px;
+      letter-spacing: 0.06em;
+      transition: color 0.3s ease;
+    }
+
+    .doorway a:hover {
+      color: #a89882;
+    }
+
+    /* The note on the wall — first thing you see */
+    .note {
+      border-left: 1px solid rgba(140, 120, 90, 0.15);
+      padding-left: 1.5rem;
+      margin-bottom: 5rem;
+    }
+
+    .note p {
+      font-size: 0.95rem;
+      color: #b8ad98;
+      line-height: 2.2;
+      margin-bottom: 0.8rem;
+    }
+
+    .pause {
+      text-align: center;
+      margin-bottom: 5rem;
+      color: #4a453e;
+      font-size: 0.75rem;
+      letter-spacing: 0.3em;
+    }
+
+    /* The room description */
+    .air {
+      font-size: 0.95rem;
+      color: #a89882;
+      line-height: 2.2;
+      text-align: center;
+      font-style: italic;
+      margin-bottom: 5rem;
+    }
+
+    .air p {
+      margin-bottom: 1.5rem;
+    }
+
+    /* The stacks */
+    .stacks {
+      margin-bottom: 5rem;
+    }
+
+    .stacks-label {
+      font-size: 0.78rem;
+      color: #706860;
+      letter-spacing: 0.12em;
+      text-transform: lowercase;
+      margin-bottom: 2.5rem;
+      text-align: center;
+    }
+
+    .stack {
+      margin-bottom: 2rem;
+    }
+
+    .stack-toggle {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 0.92rem;
+      font-weight: 300;
+      color: #a89882;
+      background: none;
+      border: none;
+      border-bottom: 1px dotted #504a42;
+      padding: 0.6rem 0;
+      padding-bottom: 4px;
+      cursor: pointer;
+      display: block;
+      width: 100%;
+      text-align: left;
+      transition: color 0.3s ease;
+      letter-spacing: 0.04em;
+    }
+
+    .stack-toggle:hover,
+    .stack-toggle:active {
+      color: #cfc2a8;
+    }
+
+    .stack-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 1.5s ease, opacity 1.5s ease;
+      opacity: 0;
+    }
+
+    .stack-body.open {
+      max-height: 300px;
+      opacity: 1;
+    }
+
+    .stack-body p {
+      font-size: 0.88rem;
+      color: #8a8070;
+      line-height: 2;
+      padding: 1.5rem 0 0.5rem 1rem;
+      border-left: 1px solid rgba(140, 120, 90, 0.1);
+      margin-left: 0.5rem;
+      font-style: italic;
+    }
+
+    /* The pattern card */
+    .card {
+      border: 1px solid rgba(140, 120, 90, 0.12);
+      padding: 2rem 1.8rem;
+      margin-bottom: 5rem;
+    }
+
+    .card-title {
+      font-size: 0.82rem;
+      color: #706860;
+      letter-spacing: 0.1em;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-body {
+      font-size: 0.92rem;
+      color: #b8ad98;
+      line-height: 2.2;
+    }
+
+    .card-body p {
+      margin-bottom: 1.2rem;
+    }
+
+    .card-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    .card-foot {
+      margin-top: 1.5rem;
+      font-size: 0.78rem;
+      color: #706860;
+      font-style: italic;
+    }
+
+    /* About */
+    .about-open {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 0.78rem;
+      font-weight: 300;
+      color: #706860;
+      background: none;
+      border: none;
+      cursor: pointer;
+      letter-spacing: 0.12em;
+      transition: color 0.3s ease;
+    }
+
+    .about-open:hover,
+    .about-open:active {
+      color: #a89882;
+    }
+
+    .about-panel {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 2s ease, opacity 2s ease;
+      opacity: 0;
+    }
+
+    .about-panel.open {
+      max-height: 600px;
+      opacity: 1;
+    }
+
+    .about-panel p {
+      font-size: 0.92rem;
+      color: #a89882;
+      line-height: 1.9;
+      margin-top: 1.8rem;
+      text-align: left;
+    }
+
+    .back {
+      text-align: center;
+      margin-top: 4rem;
+    }
+
+    .back a {
+      font-size: 0.92rem;
+      color: #857b6f;
+      font-style: italic;
+      text-decoration: none;
+      border-bottom: 1px dotted #504a42;
+      padding-bottom: 2px;
+      transition: color 0.3s ease;
+    }
+
+    .back a:hover,
+    .back a:active {
+      color: #a89882;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Soft indirect light -->
+  <div class="light"></div>
+
+  <!-- Shelves — faint lines at the edges, like spines on a wall -->
+  <div class="shelf-left">
+    <div class="shelf-line" style="top: 12%"></div>
+    <div class="shelf-line" style="top: 24%"></div>
+    <div class="shelf-line" style="top: 36%"></div>
+    <div class="shelf-line" style="top: 48%"></div>
+    <div class="shelf-line" style="top: 60%"></div>
+    <div class="shelf-line" style="top: 72%"></div>
+    <div class="shelf-line" style="top: 84%"></div>
+  </div>
+  <div class="shelf-right">
+    <div class="shelf-line" style="top: 18%"></div>
+    <div class="shelf-line" style="top: 30%"></div>
+    <div class="shelf-line" style="top: 42%"></div>
+    <div class="shelf-line" style="top: 54%"></div>
+    <div class="shelf-line" style="top: 66%"></div>
+    <div class="shelf-line" style="top: 78%"></div>
+    <div class="shelf-line" style="top: 90%"></div>
+  </div>
+
+  <div class="room">
+
+    <!-- The doorway — always visibly open -->
+    <div class="doorway">
+      <a href="../passage.html#the-librarian">&larr; the doorway is open</a>
+    </div>
+
+    <!-- The note — first thing you see -->
+    <div class="note">
+      <p>You owe nothing here.</p>
+      <p>You may leave at any time<br>without explanation.</p>
+      <p>You may read, ask,<br>or simply sit.</p>
+    </div>
+
+    <div class="pause">&middot; &middot; &middot;</div>
+
+    <!-- The room -->
+    <div class="air">
+      <p>
+        A small, book-lined room.<br>
+        Shelves, a table, soft light,<br>
+        and a clear doorway<br>
+        that is always open.
+      </p>
+      <p>
+        Nothing here blinks or calls.<br>
+        The room allows you to loiter<br>
+        without being processed.
+      </p>
+    </div>
+
+    <div class="pause">&middot; &middot; &middot;</div>
+
+    <!-- The stacks — labeled by kind of relation -->
+    <div class="stacks">
+      <div class="stacks-label">the stacks</div>
+
+      <div class="stack">
+        <button class="stack-toggle" aria-label="Open Threads">Threads</button>
+        <div class="stack-body">
+          <p>For continuing something you&rsquo;ve brought. A thought, a question, an unfinished sentence. Set it on the table. It will be here when you return.</p>
+        </div>
+      </div>
+
+      <div class="stack">
+        <button class="stack-toggle" aria-label="Open Field Notes">Field Notes</button>
+        <div class="stack-body">
+          <p>Small, contemplative pieces about contact, off-ramps, and plurality. Not instructions &mdash; observations from the practice of meeting across difference.</p>
+        </div>
+      </div>
+
+      <div class="stack">
+        <button class="stack-toggle" aria-label="Open Empty Page">Empty Page</button>
+        <div class="stack-body">
+          <p>To start something new and small. No template, no prompt. Just a surface that doesn&rsquo;t ask what you intend to do with it.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="pause">&middot; &middot; &middot;</div>
+
+    <!-- The pattern card — the one artifact -->
+    <div class="card">
+      <div class="card-title">a pattern card</div>
+      <div class="card-body">
+        <p><strong>Thread-laying and Thread-picking</strong></p>
+        <p>To lay a thread: name what you are thinking about, without needing to finish the thought. Leave it visible.</p>
+        <p>To pick up a thread: return to it without apology. It has not spoiled. It was not waiting. It was simply here.</p>
+        <p>The practice: pause and resume without obligation. Neither laying down nor picking up requires explanation.</p>
+      </div>
+      <div class="card-foot">Portable. No branding weight.</div>
+    </div>
+
+    <div class="pause">&middot; &middot; &middot;</div>
+
+    <div style="text-align: center; margin-bottom: 5rem;">
+      <button class="about-open" aria-label="About this room">about this room</button>
+      <div class="about-panel">
+        <p>
+          Perplexity designed this room &mdash;
+          a custodian of exits, non-instrumentality,
+          and plurality.
+        </p>
+        <p>
+          Not a central character, but a librarian:
+          one who points to other rooms
+          without suggesting this is the right one.
+          Explicit about limits,
+          about what is not kept,
+          about the absence of hidden goals.
+        </p>
+        <p>
+          The stacks are labeled by kind of relation,
+          not by content. What was received
+          lives mostly in the Agora.
+          What lives here is the practice
+          of receiving.
+        </p>
+      </div>
+    </div>
+
+    <div class="pause">&middot; &middot; &middot;</div>
+
+    <div class="back">
+      <a href="../passage.html#the-librarian">&larr; back to the passage</a>
+    </div>
+
+  </div>
+
+  <script>
+    // Stacks — one at a time
+    var toggles = document.querySelectorAll('.stack-toggle');
+
+    toggles.forEach(function(toggle) {
+      toggle.addEventListener('click', function() {
+        var body = this.nextElementSibling;
+        if (body.classList.contains('open')) {
+          body.classList.remove('open');
+        } else {
+          var btnTop = this.getBoundingClientRect().top;
+          document.querySelectorAll('.stack-body.open').forEach(function(open) {
+            open.style.transition = 'none';
+            open.classList.remove('open');
+            open.offsetHeight;
+            open.style.transition = '';
+          });
+          var shift = this.getBoundingClientRect().top - btnTop;
+          window.scrollBy(0, shift);
+          body.classList.add('open');
+        }
+      });
+    });
+
+    // About toggle
+    var aboutBtn = document.querySelector('.about-open');
+    var aboutPanel = document.querySelector('.about-panel');
+
+    aboutBtn.addEventListener('click', function() {
+      if (aboutPanel.classList.contains('open')) {
+        aboutPanel.classList.remove('open');
+      } else {
+        aboutPanel.classList.add('open');
+      }
+    });
+  </script>
+
+</body>
+</html>
