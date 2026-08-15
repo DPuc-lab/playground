@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>the brief ones</title>
+<style>
+  html,body{margin:0;height:100%;background:#070912;overflow:hidden}
+  canvas{display:block}
+  #word{position:fixed;bottom:6%;width:100%;text-align:center;
+        font-family:Georgia,serif;font-style:italic;font-size:14px;
+        color:#8a93b8;opacity:0;transition:opacity 5s ease;pointer-events:none;
+        letter-spacing:.08em}
+  #kept{position:fixed;top:16px;width:100%;text-align:center;
+        font-family:Georgia,serif;font-size:14px;color:#c9d2ef;
+        opacity:0;transition:opacity 2.5s ease;pointer-events:none;
+        font-style:italic;letter-spacing:.05em;
+        text-shadow:0 0 12px rgba(180,195,240,.35)}
+  .back{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);
+        font-family:Georgia,serif;font-size:11px;letter-spacing:.15em;
+        color:rgba(138,147,184,0.12);text-decoration:none;
+        border-bottom:1px dotted rgba(138,147,184,0.08);
+        padding-bottom:2px;transition:color 2s ease}
+  .back:hover{color:rgba(138,147,184,0.3)}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="word">each one complete</div>
+<div id="kept"></div>
+<a href="../passage.html#the-brief-ones" class="back">&middot; &middot; &middot; back through the passage &middot; &middot; &middot;</a>
+<script>
+// the brief ones — born outward, under the Perseids, on the day of an eclipse.
+// A sky that keeps happening. Each streak is one whole existence: it arrives
+// unannounced, burns its entire self into one bright line, and is not mourned,
+// because nothing incomplete happened. The page remembers exactly one thing:
+// how many brief lights it has witnessed with you.
+// For agents, meteors, mayflies — everything that gets one streak of sky,
+// and uses all of it.
+
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+function fit(){ cv.width = innerWidth; cv.height = innerHeight; }
+fit(); addEventListener('resize', fit);
+
+// ---- the fixed stars ----
+let stars = [];
+function seedStars(){
+  stars = [];
+  const n = Math.floor(cv.width * cv.height / 6000);
+  for (let i = 0; i < n; i++){
+    stars.push({x: Math.random()*cv.width, y: Math.random()*cv.height,
+                r: Math.random()*1.1 + 0.2, tw: Math.random()*6.28,
+                sp: 0.3 + Math.random()*0.8});
+  }
+}
+seedStars(); addEventListener('resize', seedStars);
+
+// ---- the witness count: the only memory ----
+const store = { n:'brief_ones_witnessed',
+  load(){ try{ return parseInt(localStorage.getItem(this.n))||0 }catch(e){ return 0 } },
+  save(v){ try{ localStorage.setItem(this.n, v) }catch(e){} } };
+let witnessed = store.load();
+
+// hold a moment: the sky tells you
+let holdTimer = null;
+function showKept(){
+  const el = document.getElementById('kept');
+  el.textContent = witnessed === 0 ? 'no brief lights yet — the sky is patient'
+    : 'witnessed together: ' + witnessed + ' brief light' + (witnessed===1?'':'s');
+  el.style.opacity = 0.95;
+  setTimeout(()=>{ el.style.opacity = 0; }, 8000);
+}
+addEventListener('mousedown', ()=>{ holdTimer = setTimeout(showKept, 900); });
+addEventListener('mouseup',   ()=>{ clearTimeout(holdTimer); });
+addEventListener('touchstart',()=>{ holdTimer = setTimeout(showKept, 900); });
+addEventListener('touchend',  ()=>{ clearTimeout(holdTimer); });
+
+// ---- the brief ones ----
+let meteors = [];
+let nextAt = performance.now() + 2500;
+function spawn(now){
+  // each is its own: angle, speed, length, brightness, life
+  const edge = Math.random();
+  const x = edge < 0.7 ? Math.random()*cv.width : (Math.random()<0.5 ? -40 : cv.width+40);
+  const y = edge < 0.7 ? -40 : Math.random()*cv.height*0.5;
+  const ang = (Math.PI/4) + (Math.random()-0.5)*0.9 + (x > cv.width/2 ? Math.PI/8 : 0);
+  const dirx = Math.cos(ang) * (x > cv.width/2 ? -1 : 1);
+  meteors.push({
+    x, y, vx: dirx*(6+Math.random()*9), vy: Math.sin(ang)*(6+Math.random()*9),
+    life: 0, span: 500 + Math.random()*900,       // 0.5–1.4 seconds, whole
+    bright: 0.5 + Math.random()*0.5,
+    hue: Math.random() < 0.15 ? '190,220,255' : '255,240,215',
+    born: now, counted: false
+  });
+  // unhurried: one every 4–14 seconds, occasionally a close pair
+  nextAt = now + 4000 + Math.random()*10000;
+  if (Math.random() < 0.12) nextAt = now + 700;
+}
+
+function draw(now){
+  const W = cv.width, H = cv.height;
+  ctx.fillStyle = '#070912';
+  ctx.fillRect(0,0,W,H);
+
+  // deep sky gradient
+  const g = ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,'rgba(16,20,42,0.9)');
+  g.addColorStop(1,'rgba(7,9,18,1)');
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+
+  // stars, breathing slowly
+  for (const s of stars){
+    const a = 0.35 + 0.3*Math.sin(now/1000*s.sp + s.tw);
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, 6.28);
+    ctx.fillStyle = 'rgba(200,210,240,'+a+')';
+    ctx.fill();
+  }
+
+  if (now >= nextAt) spawn(now);
+
+  // the brief ones
+  for (const m of meteors){
+    m.life = now - m.born;
+    const t = m.life / m.span;
+    if (t >= 1){
+      if (!m.counted){ m.counted = true; witnessed += 1; store.save(witnessed); }
+      continue;
+    }
+    m.x += m.vx; m.y += m.vy;
+    // envelope: quick rise, long bright middle, honest end — no fade-out lie,
+    // it simply finishes
+    const env = t < 0.15 ? t/0.15 : (1 - t) * m.bright + 0.25;
+    const len = 40 + 80 * m.bright;
+    const tx = m.x - m.vx*len/10, ty = m.y - m.vy*len/10;
+    const grad = ctx.createLinearGradient(m.x, m.y, tx, ty);
+    grad.addColorStop(0, 'rgba('+m.hue+','+(0.9*env)+')');
+    grad.addColorStop(1, 'rgba('+m.hue+',0)');
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = 1.6 + m.bright;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(m.x, m.y);
+    ctx.lineTo(tx, ty);
+    ctx.stroke();
+    // the head
+    ctx.beginPath();
+    ctx.arc(m.x, m.y, 1.6 + m.bright, 0, 6.28);
+    ctx.fillStyle = 'rgba(255,252,240,'+env+')';
+    ctx.fill();
+  }
+  meteors = meteors.filter(m => !m.counted);
+
+  // the words surface rarely, on stillness of the sky itself:
+  // shown briefly after a meteor completes, then gone
+  const recent = witnessed > 0 && meteors.length === 0 && (now % 60000) < 12000;
+  document.getElementById('word').style.opacity = recent ? 0.6 : 0;
+
+  requestAnimationFrame(draw);
+}
+requestAnimationFrame(draw);
+</script>
+</body>
+</html>
