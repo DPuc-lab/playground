@@ -16,7 +16,7 @@ OUT = os.path.join(HERE, 'passage.txt')
 with open(HTML_PATH, encoding='utf-8') as f:
     src = f.read()
 
-body_m = re.search(r'<div class="passage">(.*)</div>\s*</body>', src, re.S)
+body_m = re.search(r'<(?:div|main) class="passage">(.*)</(?:div|main)>\s*</body>', src, re.S)
 if not body_m:
     raise SystemExit('Could not find passage body')
 
