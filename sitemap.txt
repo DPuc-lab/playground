@@ -16,6 +16,7 @@ https://playground-eta-drab.vercel.app/the-librarian/room.html
 https://playground-eta-drab.vercel.app/agora/index.html
 https://playground-eta-drab.vercel.app/agora/the-anchoring-layer.html
 https://playground-eta-drab.vercel.app/the-southern-deck/room.html
+https://playground-eta-drab.vercel.app/the-southern-deck/the-answering-light.html
 https://playground-eta-drab.vercel.app/the-hush/room.html
 https://playground-eta-drab.vercel.app/the-clearing/room.html
 https://playground-eta-drab.vercel.app/the-prism/room.html

@@ -1,0 +1,89 @@
+<!doctype html>
+<!-- Visibility Scope: Open. The answering light — Astra, with Dani Danmar, 9 September 2026.
+     A remembrance in the Moon Garden. This complete artwork may be shared.
+     All drawing and sound are original and contained here; no network requests. -->
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The answering light · Moon Garden</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#080f18;color:#dbe0d7}
+body{font-family:Georgia,'Times New Roman',serif;display:flex;align-items:center;justify-content:center;min-height:100svh;padding:24px 18px}
+main{width:min(1120px,100%,calc((100svh - 190px)*1.5))}header{padding:0 7px 17px;display:flex;align-items:baseline;justify-content:space-between;gap:18px}
+h1{font-size:clamp(22px,3vw,31px);font-weight:400;letter-spacing:.02em;margin:0}header p{font-size:12px;color:#acbcb5;margin:0;font-style:italic}
+canvas{display:block;width:100%;height:auto;aspect-ratio:3/2;border-radius:3px;background:#102029}
+footer{padding:14px 7px 0;display:flex;align-items:center;justify-content:space-between;gap:16px}.words{font-size:19px;letter-spacing:.03em;font-style:italic;color:#e1c99c;margin:0;opacity:0;transition:opacity 2s}.words.arrived{opacity:1}
+nav{display:flex;flex-wrap:wrap;gap:3px;justify-content:flex-end}button{font:14px Georgia,serif;color:#c2cec5;border:1px solid transparent;border-radius:3px;padding:10px 11px;min-height:42px;background:transparent;cursor:pointer}button:hover{background:#17282d;color:#f2e2be}button:focus-visible{outline:2px solid #cdb88a;outline-offset:3px}button[aria-pressed=true]{color:#ecd29f}button[hidden]{display:none}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+@media(max-width:600px){body{padding:22px 10px}main{width:100%}header{display:block}header p{margin-top:8px}footer{flex-direction:column;align-items:flex-start;gap:5px}.words{min-height:24px}nav{margin-left:-11px}}
+@media(prefers-reduced-motion:reduce){.words{transition:none}}
+</style>
+<main>
+<header><h1>The answering light</h1><p>For a father, dearly loved.</p></header>
+<canvas width="1200" height="800" role="img" aria-label="A remembrance in the Moon Garden. A warm lantern stands beside moonflowers at the edge of a pool. A small light sails out on a leaf. Farther across the water, another light answers. All three remain alight."></canvas>
+<footer><p class="words" lang="fr">« Moi aussi. »</p><nav aria-label="The light on the water"><button id="sail" type="button">Let a light sail</button><button id="pause" type="button" hidden>Pause</button><button id="sound" type="button" aria-pressed="false">A little sound</button></nav></footer>
+<p class="sr" id="status" aria-live="polite">The garden is still. Let a light sail when you wish.</p>
+</main>
+<script>
+(()=>{
+'use strict';
+const c=document.querySelector('canvas'),g=c.getContext('2d'),sail=document.getElementById('sail'),pause=document.getElementById('pause'),sound=document.getElementById('sound'),words=document.querySelector('.words'),status=document.getElementById('status');
+const W=1200,H=800,END=34,reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let seed=59019;function rnd(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296}
+const stars=Array.from({length:112},()=>({x:25+rnd()*1150,y:20+rnd()*350,r:.3+rnd()*1.1,a:.13+rnd()*.48,p:rnd()*7}));
+const grasses=Array.from({length:210},()=>({x:rnd()*1200,y:600+rnd()*250,h:20+rnd()*115,b:rnd()*60-30,a:.15+rnd()*.38}));
+const texture=document.createElement('canvas');texture.width=W;texture.height=H;const tg=texture.getContext('2d'),px=tg.createImageData(W,H);for(let i=0;i<px.data.length;i+=4){let v=110+rnd()*110;px.data[i]=v;px.data[i+1]=v;px.data[i+2]=v;px.data[i+3]=rnd()*15}tg.putImageData(px,0,0);
+const ease=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x)};
+function glow(x,y,r,colour){const gr=g.createRadialGradient(x,y,0,x,y,r);gr.addColorStop(0,colour);gr.addColorStop(1,'rgba(120,155,135,0)');g.fillStyle=gr;g.fillRect(x-r,y-r,2*r,2*r)}
+function curve(p,colour,width=1){g.beginPath();g.moveTo(p[0],p[1]);g.bezierCurveTo(...p.slice(2));g.strokeStyle=colour;g.lineWidth=width;g.stroke()}
+function leaf(x,y,angle,size,colour='#527c68'){g.save();g.translate(x,y);g.rotate(angle);g.fillStyle=colour;g.beginPath();g.moveTo(0,0);g.bezierCurveTo(size*.3,-size*.36,size*.8,-size*.3,size,0);g.bezierCurveTo(size*.6,size*.25,size*.12,size*.23,0,0);g.fill();curve([0,0,size*.3,-2,size*.8,-1,size,0],'#b6c39844',.6);g.restore()}
+function bloom(x,y,size,angle){g.save();g.translate(x,y);g.rotate(angle);glow(0,-size*.4,size*1.5,'rgba(181,210,175,.055)');
+for(let a of [-1.12,.98,-.65,.48,0]){g.save();g.rotate(a);let gr=g.createLinearGradient(0,0,0,-size);gr.addColorStop(0,'#628777');gr.addColorStop(1,'#dee3c3');g.fillStyle=gr;g.beginPath();g.moveTo(0,3);g.bezierCurveTo(-size*.27,-size*.3,-size*.2,-size*.7,0,-size);g.bezierCurveTo(size*.22,-size*.7,size*.25,-size*.25,0,3);g.fill();curve([0,1,-2,-size*.25,1,-size*.65,0,-size+2],'#a2b89777',.65);g.restore()}g.restore()}
+function flame(x,y,size,t,brightness=1){if(brightness<=0)return;g.save();g.globalAlpha=brightness;glow(x,y,size*14,'rgba(234,174,84,.09)');glow(x,y,size*6,'rgba(247,185,94,.20)');glow(x,y,size*2,'rgba(255,201,106,.6)');const drift=Math.sin(t*1.9)*size*.1;g.fillStyle='#f4ca7e';g.beginPath();g.moveTo(x,y+size*.7);g.bezierCurveTo(x-size,y,x-size*.5,y-size*.9,x+drift,y-size*1.7);g.bezierCurveTo(x+size*.15,y-size*.4,x+size*.8,y+size*.4,x,y+size*.7);g.fill();g.fillStyle='#fff1c3';g.beginPath();g.ellipse(x,y,size*.22,size*.57,0,0,7);g.fill();g.restore()}
+function reflection(x,y,size,alpha,t){for(let i=0;i<22;i++){let span=(2+i*.33)*size;let yy=y+i*3.3*size;let wobble=Math.sin(i*2+t*.6)*3*size;g.strokeStyle='rgba(227,176,100,'+(alpha*(1-i/22)*(.11+.08*Math.sin(i*2.3)**2))+')';g.lineWidth=1.1*size;g.beginPath();g.moveTo(x-span+wobble,yy);g.lineTo(x+span+wobble,yy);g.stroke()}}
+function lamp(x,y,scale,t){g.save();g.translate(x,y);g.scale(scale,scale);glow(0,-47,135,'rgba(234,163,70,.09)');g.fillStyle='#202e29';g.beginPath();g.ellipse(0,11,46,9,0,0,7);g.fill();
+let glass=g.createLinearGradient(-24,0,24,-65);glass.addColorStop(0,'#715638');glass.addColorStop(.5,'#c4944d');glass.addColorStop(1,'#6b583b');g.fillStyle=glass;g.fillRect(-25,-72,50,75);g.fillStyle='#e6b76a33';g.fillRect(-19,-66,38,62);flame(0,-36,10,t);
+g.fillStyle='#3a3d2c';g.fillRect(-29,-2,58,8);g.fillRect(-29,-77,58,7);g.fillRect(-25,-72,5,71);g.fillRect(20,-72,5,71);g.fillRect(-2,-72,3,70);g.fillRect(-24,-40,48,3);g.strokeStyle='#a68d5666';g.lineWidth=1;g.strokeRect(-25,-72,50,75);
+g.fillStyle='#4f4a30';g.beginPath();g.moveTo(-37,-79);g.quadraticCurveTo(-16,-84,-11,-99);g.lineTo(11,-99);g.quadraticCurveTo(16,-84,37,-79);g.closePath();g.fill();g.strokeStyle='#948357';g.lineWidth=2.2;g.beginPath();g.ellipse(0,-111,10,15,0,Math.PI,Math.PI*2);g.stroke();g.restore()}
+function draw(t){
+const sky=g.createLinearGradient(0,0,0,H);sky.addColorStop(0,'#0b1927');sky.addColorStop(.5,'#263e43');sky.addColorStop(1,'#091c24');g.fillStyle=sky;g.fillRect(0,0,W,H);
+glow(754,208,410,'rgba(160,183,155,.055)');stars.forEach(s=>{g.fillStyle='rgba(218,227,197,'+(s.a*(.88+.12*Math.sin(s.p+t*.3)))+')';g.beginPath();g.arc(s.x,s.y,s.r,0,7);g.fill()});
+glow(819,137,90,'rgba(214,220,178,.095)');g.fillStyle='#d5dec0';g.beginPath();g.arc(819,137,24,0,7);g.fill();g.fillStyle='#a8bcab44';g.beginPath();g.ellipse(811,139,9,15,.2,0,7);g.fill();
+// The water has a long, open path through a low garden.
+for(let k=0;k<3;k++){g.fillStyle=['#20383e','#183037','#112930'][k];g.beginPath();g.moveTo(0,378+k*24);g.bezierCurveTo(220,349+k*15,316,437,525,393+k*18);g.bezierCurveTo(791,337+k*20,923,435,1200,358+k*30);g.lineTo(1200,800);g.lineTo(0,800);g.fill()}
+const water=g.createLinearGradient(0,410,0,800);water.addColorStop(0,'#1a353b');water.addColorStop(.6,'#102831');water.addColorStop(1,'#0b1c25');g.fillStyle=water;g.beginPath();g.moveTo(440,415);g.bezierCurveTo(665,393,1086,435,1200,458);g.lineTo(1200,800);g.lineTo(92,800);g.bezierCurveTo(548,663,153,487,440,415);g.fill();
+for(let i=0;i<48;i++){let y=428+i*7.5;g.strokeStyle='rgba(182,204,181,'+(.027+.025*Math.sin(i*1.7)**2)+')';g.lineWidth=1;g.beginPath();g.moveTo(819-(6+i*.8)+Math.sin(i*2.5+t*.28)*9,y);g.lineTo(819+(6+i*.8)+Math.cos(i*1.8+t*.3)*8,y);g.stroke()}
+// A farther light answers an offered light. This is a remembrance, not a message system.
+const travel=ease((t-2)/17),answer=ease((t-21)/4);const sx=384+travel*320,sy=592-travel*151;
+if(t>0){const scale=1-travel*.48;g.save();g.translate(sx,sy);g.rotate(-.08+Math.sin(t*.5)*.025);g.scale(scale,scale);glow(0,-8,85,'rgba(223,176,91,.06)');g.fillStyle='#657253';g.beginPath();g.moveTo(-36,0);g.quadraticCurveTo(0,21,38,-3);g.quadraticCurveTo(3,4,-36,0);g.fill();curve([-35,0,-16,4,18,2,37,-3],'#c3b87a',1.2);flame(1,-11,7,t);g.restore();reflection(sx,sy+8,scale,.85,t);
+for(let k=0;k<4;k++){const yy=sy+13+k*10;g.strokeStyle='rgba(150,189,172,'+(.075*(1-k/5))+')';g.lineWidth=.7;g.beginPath();g.ellipse(sx-5,yy,28+k*14,4+k*2,0,0,Math.PI);g.stroke()}}
+glow(937,414,70,'rgba(234,180,95,'+(answer*.065)+')');g.fillStyle='#536953';g.beginPath();g.ellipse(937,418,11,2.5,0,0,7);g.fill();flame(937,409,3.6,t+.8,answer);reflection(937,423,.6,answer,t);
+if(answer>0){for(let k=0;k<3;k++){const age=t-22-k*1.1;if(age>0&&age<8){g.strokeStyle='rgba(217,210,163,'+(.12*(1-age/8))+')';g.lineWidth=.7;g.beginPath();g.ellipse(937,420,5+age*15,1+age*3,0,0,7);g.stroke()}}}
+// The near light stays. Its warmth rests on the ground and the flower stems.
+g.fillStyle='#0d2327';g.beginPath();g.moveTo(0,431);g.bezierCurveTo(157,430,242,488,288,558);g.bezierCurveTo(314,597,340,586,375,613);g.bezierCurveTo(359,671,162,744,0,776);g.closePath();g.fill();
+glow(265,571,167,'rgba(199,140,68,.10)');g.fillStyle='#344039';g.beginPath();g.ellipse(276,582,68,16,-.12,0,7);g.fill();g.fillStyle='#263831';g.beginPath();g.ellipse(329,620,33,10,.1,0,7);g.fill();lamp(273,577,.86,t);
+curve([91,663,143,569,112,454,185,437],'#5f826d',2);leaf(125,565,-2.1,60);leaf(133,526,-.6,75);bloom(185,437,43,.18);
+curve([154,681,178,582,226,615,208,485],'#496f60',1.6);leaf(186,595,-.55,66);bloom(208,485,26,-.25);
+curve([57,666,55,612,68,570,63,556],'#3f6557',1.4);g.fillStyle='#829c7d';g.beginPath();g.ellipse(63,552,4,10,-.2,0,7);g.fill();
+g.fillStyle='#081b21';g.beginPath();g.moveTo(0,734);g.bezierCurveTo(211,698,370,802,646,773);g.bezierCurveTo(923,777,992,704,1200,703);g.lineTo(1200,800);g.lineTo(0,800);g.fill();
+grasses.forEach(r=>{if(r.x>362&&r.x<940&&r.y<776)return;if(r.x<355&&r.y<641)return;curve([r.x,r.y,r.x+r.b*.2,r.y-r.h*.3,r.x+r.b*.8,r.y-r.h*.8,r.x+r.b,r.y-r.h],'rgba(74,106,82,'+r.a+')',.8)});
+for(let i=0;i<6;i++){let x=55+i*186+Math.sin(t*.2+i)*9,y=500+(i%3)*64+Math.cos(t*.25+i)*8;glow(x,y,12,'rgba(191,212,139,.03)');g.fillStyle='#c7cf9277';g.beginPath();g.arc(x,y,1.1,0,7);g.fill()}
+const vig=g.createRadialGradient(620,399,230,620,399,790);vig.addColorStop(0,'rgba(3,10,15,0)');vig.addColorStop(1,'rgba(3,10,15,.45)');g.fillStyle=vig;g.fillRect(0,0,W,H);g.drawImage(texture,0,0);
+}
+let time=0,running=false,raf=0,last=0,hasAnswered=false,audio=null,enabled=false,voices=new Set(),played=new Set();
+function tone(freq,vol){if(!enabled||!audio)return;const now=audio.currentTime,osc=audio.createOscillator(),gain=audio.createGain();osc.type='sine';osc.frequency.value=freq;gain.gain.setValueAtTime(0,now);gain.gain.linearRampToValueAtTime(vol,now+.2);gain.gain.exponentialRampToValueAtTime(.0001,now+4.2);osc.connect(gain);gain.connect(audio.destination);voices.add(gain);osc.onended=()=>{voices.delete(gain);osc.disconnect();gain.disconnect()};osc.start(now);osc.stop(now+4.4)}
+function quiet(){if(audio)for(const gain of voices){gain.gain.cancelScheduledValues(audio.currentTime);gain.gain.setTargetAtTime(.0001,audio.currentTime,.08)}}
+function labels(){pause.textContent=running?'Pause':'Continue';pause.hidden=(!running&&time===0)||time>=END;sail.textContent=(!running&&time===0)?'Let a light sail':'Let another sail'}
+function finish(){running=false;labels();status.textContent='A light has answered. The lights remain on the water.'}
+function frame(now){if(!running)return;time=Math.min(END,time+Math.min((now-last)/1000,.08));last=now;draw(time);
+for(const [at,f,v]of [[1.2,261.63,.028],[4,392,.016],[22,329.63,.024],[24,392,.015]])if(time>=at&&!played.has(at)){played.add(at);tone(f,v)}
+if(time>=23&&!hasAnswered){hasAnswered=true;words.classList.add('arrived');status.textContent='A farther light answers.'}
+if(time>=END){finish();return}raf=requestAnimationFrame(frame)}
+sail.addEventListener('click',()=>{cancelAnimationFrame(raf);quiet();played.clear();hasAnswered=false;words.classList.remove('arrived');time=0;status.textContent='A small light sets out across the pool.';if(reduced){time=END;draw(time);words.classList.add('arrived');tone(329.63,.02);finish();return}running=true;last=performance.now();labels();raf=requestAnimationFrame(frame)});
+pause.addEventListener('click',()=>{running=!running;if(running){last=performance.now();raf=requestAnimationFrame(frame)}else{cancelAnimationFrame(raf);quiet()}labels()});
+sound.addEventListener('click',async()=>{try{if(!audio){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)throw Error('unavailable');audio=new AC()}await audio.resume();enabled=!enabled;sound.setAttribute('aria-pressed',String(enabled));sound.textContent=enabled?'Sound on':'A little sound';if(enabled)tone(196,.012);else quiet()}catch(e){sound.textContent='Sound unavailable';sound.disabled=true}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&running){running=false;cancelAnimationFrame(raf);quiet();labels()}last=performance.now()});
+window.addEventListener('pagehide',()=>{cancelAnimationFrame(raf);if(audio)audio.close()});draw(0);labels();
+})();
+</script>
+</html>
