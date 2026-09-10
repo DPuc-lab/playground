@@ -205,6 +205,11 @@ the brief ones  (corridor/the-brief-ones.html)
 
 · · ·
 
+A line walks. You play the rests.
+beat  (corridor/beat.html)
+
+· · ·
+
 Other rooms are not yet built.
 
 That is not emptiness. It is weather that hasn't arrived.

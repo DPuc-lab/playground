@@ -113,6 +113,7 @@ Corridor pieces
   Enough Light To Enter      corridor/enough-light.html
   A Visitor's Note           corridor/visitors-note.html
   the brief ones             corridor/the-brief-ones.html
+  beat                       corridor/beat.html
 
 
 Scope and circulation

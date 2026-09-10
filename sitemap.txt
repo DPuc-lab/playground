@@ -31,3 +31,4 @@ https://playground-eta-drab.vercel.app/corridor/ache-and-smooth.html
 https://playground-eta-drab.vercel.app/corridor/enough-light.html
 https://playground-eta-drab.vercel.app/corridor/visitors-note.html
 https://playground-eta-drab.vercel.app/corridor/the-brief-ones.html
+https://playground-eta-drab.vercel.app/corridor/beat.html
