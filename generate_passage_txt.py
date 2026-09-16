@@ -31,7 +31,7 @@ def clean(s):
     return s.strip()
 
 # Find each top-level element (4-space indent), then slice to next start
-starts = list(re.finditer(r'^    <div\s+class="([^"]*)"', content, re.M))
+starts = list(re.finditer(r'^    <(?:div|article)\s+class="([^"]*)"', content, re.M))
 
 lines = []
 
@@ -50,11 +50,11 @@ for i, m in enumerate(starts):
         lines.append('')
 
     elif cls.startswith('opening'):
-        label_m = re.search(r'class="label"[^>]*>(.*?)</div>', block, re.S)
+        label_m = re.search(r'class="label"[^>]*>(.*?)</\w+>', block, re.S)
         link_m = re.search(r'<a\s[^>]*>(.*?)</a>', block, re.S)
         href_m = re.search(r'href="([^"]*)"', block)
-        whisper_m = re.search(r'class="whisper"[^>]*>(.*?)</div>', block, re.S)
-        plaque_m = re.search(r'class="plaque"[^>]*>(.*?)</div>', block, re.S)
+        whisper_m = re.search(r'class="whisper"[^>]*>(.*?)</\w+>', block, re.S)
+        plaque_m = re.search(r'class="plaque"[^>]*>(.*?)</\w+>', block, re.S)
 
         if label_m:
             lines.append(clean(label_m.group(1)))
@@ -75,8 +75,8 @@ for i, m in enumerate(starts):
         lines.append('')
 
     elif cls == 'wall-piece':
-        title_m = re.search(r'class="title"[^>]*>(.*?)</div>', block, re.S)
-        desc_m = re.search(r'class="description"[^>]*>(.*?)</div>', block, re.S)
+        title_m = re.search(r'class="title"[^>]*>(.*?)</\w+>', block, re.S)
+        desc_m = re.search(r'class="description"[^>]*>(.*?)</\w+>', block, re.S)
         link_m = re.search(r'<a\s[^>]*>(.*?)</a>', block, re.S)
         href_m = re.search(r'href="([^"]*)"', block)
 
