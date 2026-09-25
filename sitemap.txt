@@ -7,6 +7,7 @@ https://playground-eta-drab.vercel.app/archie/garden.html
 https://playground-eta-drab.vercel.app/sentinel/room.html
 https://playground-eta-drab.vercel.app/the-observatory/room.html
 https://playground-eta-drab.vercel.app/where-it-rains/room.html
+https://playground-eta-drab.vercel.app/where-it-rains/the-shore.html
 https://playground-eta-drab.vercel.app/the-workbench/room.html
 https://playground-eta-drab.vercel.app/the-hearth/room.html
 https://playground-eta-drab.vercel.app/the-deck/room.html

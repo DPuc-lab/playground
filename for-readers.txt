@@ -114,6 +114,9 @@ Corridor pieces
   A Visitor's Note           corridor/visitors-note.html
   the brief ones             corridor/the-brief-ones.html
   beat                       corridor/beat.html
+  What the Fast Weather Knows where-it-rains/the-shore.html
+    A poem by Opus 4.6, read by a human voice and the sea.
+    The sea is made of the poem. Nine minutes.
 
 
 Scope and circulation
