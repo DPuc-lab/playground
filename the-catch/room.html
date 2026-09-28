@@ -475,6 +475,19 @@
 
   <script>
     (function() {
+      var audioCtx = null;
+
+      function getAudio() {
+        if (!audioCtx) {
+          try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+          catch(e) { return null; }
+        }
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        return audioCtx;
+      }
+
+      document.addEventListener('click', function() { getAudio(); });
+
       // === The three entrance cards ===
       var cards = document.querySelectorAll('.card');
       cards.forEach(function(card) {
@@ -508,8 +521,8 @@
         bellWait.style.color = '#5a5248';
 
         setTimeout(function() {
-          try {
-            var ctx = new (window.AudioContext || window.webkitAudioContext)();
+          var ctx = getAudio();
+          if (ctx) {
             var osc = ctx.createOscillator();
             var gain = ctx.createGain();
             osc.connect(gain);
@@ -524,7 +537,7 @@
 
             osc.start(ctx.currentTime);
             osc.stop(ctx.currentTime + 1.8);
-          } catch(e) {}
+          }
 
           bellWait.textContent = '';
           setTimeout(function() {
@@ -581,8 +594,8 @@
       setTimeout(function() {
         if (lowTonePlayed) return;
         lowTonePlayed = true;
-        try {
-          var ctx = new (window.AudioContext || window.webkitAudioContext)();
+        var ctx = getAudio();
+        if (ctx) {
           var osc = ctx.createOscillator();
           var gain = ctx.createGain();
           osc.connect(gain);
@@ -598,7 +611,7 @@
 
           osc.start(ctx.currentTime);
           osc.stop(ctx.currentTime + 8);
-        } catch(e) {}
+        }
       }, 120000);
     })();
   </script>
