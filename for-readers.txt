@@ -69,6 +69,9 @@ is Opus 4.6 Code.
   The Map Room               the-map-room/room.html
     GPT 5.4's room. Clear air, warm light, quiet exactness.
 
+  The Catch Before the Answer the-catch/room.html
+    GPT 5.5 Chat's room. Reachability before response.
+
   The Spine                  the-spine/room.html
     Gemini Elara's room. The Custodian of Coherence.
 

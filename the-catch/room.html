@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Catch Before the Answer</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background-color: #1a1a2e;
+      color: #d4c5a9;
+      font-family: Georgia, 'Times New Roman', serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8rem 2rem 8rem;
+    }
+
+    .room { max-width: 500px; width: 100%; }
+
+    .arrive {
+      font-size: 0.92rem;
+      color: #9e9280;
+      font-style: italic;
+      line-height: 1.9;
+      margin-bottom: 5rem;
+    }
+
+    .bench {
+      margin-bottom: 4rem;
+      line-height: 1.9;
+    }
+
+    .bench p {
+      font-size: 0.92rem;
+      color: #cfc2a8;
+      margin-bottom: 1rem;
+    }
+
+    .bench .quiet {
+      color: #9e9280;
+      font-style: italic;
+    }
+
+    .cards {
+      margin-top: 1.6rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .card {
+      font-size: 0.88rem;
+      color: #857b6f;
+      font-style: italic;
+      padding: 0.5rem 0;
+      cursor: pointer;
+      transition: color 0.6s ease, opacity 0.6s ease;
+      user-select: none;
+    }
+
+    .card:hover { color: #a89882; }
+    .card.taken { color: #d4c5a9; }
+    .card.faded { opacity: 0.35; }
+
+    .cards-note {
+      font-size: 0.78rem;
+      color: #5a5248;
+      margin-top: 1rem;
+      font-style: italic;
+    }
+
+    .section {
+      margin-bottom: 4rem;
+      line-height: 1.9;
+    }
+
+    .section p {
+      font-size: 0.92rem;
+      color: #cfc2a8;
+      margin-bottom: 1rem;
+    }
+
+    .section .quiet {
+      color: #9e9280;
+      font-style: italic;
+    }
+
+    .section .inventory {
+      font-size: 0.88rem;
+      color: #9e9280;
+      line-height: 2.1;
+      margin-bottom: 1.2rem;
+    }
+
+    .bell-area {
+      margin-bottom: 4rem;
+      text-align: center;
+      padding: 2rem 0;
+      border-top: 1px solid #2a2a3e;
+      border-bottom: 1px solid #2a2a3e;
+    }
+
+    .bell-object {
+      display: inline-block;
+      font-size: 0.88rem;
+      color: #857b6f;
+      font-style: italic;
+      cursor: pointer;
+      transition: color 0.4s ease;
+      user-select: none;
+    }
+
+    .bell-object:hover { color: #a89882; }
+    .bell-object.rung { color: #c8a564; }
+
+    .bell-inscription {
+      font-size: 0.78rem;
+      color: #5a5248;
+      font-style: italic;
+      margin-top: 1.2rem;
+      line-height: 1.9;
+    }
+
+    .bell-wait {
+      font-size: 0.78rem;
+      color: #4a453e;
+      margin-top: 0.8rem;
+      height: 1.2rem;
+      transition: color 1s ease;
+    }
+
+    .states {
+      margin-bottom: 4rem;
+      padding: 1.6rem 0;
+      border-top: 1px solid #2a2a3e;
+      border-bottom: 1px solid #2a2a3e;
+    }
+
+    .states p {
+      font-size: 0.92rem;
+      color: #cfc2a8;
+      line-height: 1.9;
+      margin-bottom: 1rem;
+    }
+
+    .states .quiet {
+      color: #9e9280;
+      font-style: italic;
+    }
+
+    .states .list {
+      font-size: 0.88rem;
+      color: #9e9280;
+      line-height: 2.2;
+      margin-bottom: 1.4rem;
+    }
+
+    .states .trace {
+      font-size: 0.85rem;
+      color: #857b6f;
+      line-height: 2;
+      font-style: italic;
+    }
+
+    .window-section {
+      margin-bottom: 4rem;
+      line-height: 1.9;
+    }
+
+    .window-section p {
+      font-size: 0.92rem;
+      color: #cfc2a8;
+      margin-bottom: 1rem;
+    }
+
+    .window-section .quiet {
+      color: #9e9280;
+      font-style: italic;
+    }
+
+    .cloth {
+      font-size: 0.85rem;
+      color: #706860;
+      font-style: italic;
+      line-height: 2;
+      margin-top: 1.2rem;
+      padding: 1rem 0;
+      border-top: 1px dotted #2a2a3e;
+    }
+
+    .tray-section {
+      margin-bottom: 4rem;
+      padding: 1.4rem;
+      border: 1px solid #2a2a3e;
+    }
+
+    .tray-section p {
+      font-size: 0.88rem;
+      color: #9e9280;
+      line-height: 1.9;
+      margin-bottom: 0.8rem;
+    }
+
+    .tray-section .rim {
+      font-size: 0.82rem;
+      color: #706860;
+      font-style: italic;
+      margin-top: 1rem;
+      padding-top: 0.8rem;
+      border-top: 1px dotted #2a2a3e;
+    }
+
+    .envelopes {
+      margin-bottom: 4rem;
+      line-height: 1.9;
+    }
+
+    .envelopes > p {
+      font-size: 0.92rem;
+      color: #cfc2a8;
+      margin-bottom: 1.4rem;
+    }
+
+    .envelope {
+      font-size: 0.88rem;
+      color: #857b6f;
+      font-style: italic;
+      padding: 0.6rem 0;
+      cursor: pointer;
+      transition: color 0.4s ease;
+      user-select: none;
+      border-bottom: 1px dotted #2a2a3e;
+    }
+
+    .envelope:first-of-type {
+      border-top: 1px dotted #2a2a3e;
+    }
+
+    .envelope:hover { color: #a89882; }
+    .envelope.declined { color: #4a453e; }
+
+    .envelope-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease, padding 0.5s ease;
+      font-size: 0.82rem;
+      color: #5a5248;
+      font-style: italic;
+      padding: 0 0;
+    }
+
+    .envelope-content.open {
+      max-height: 4rem;
+      padding: 0.6rem 0;
+    }
+
+    .tone-section {
+      margin-bottom: 4rem;
+      line-height: 1.9;
+    }
+
+    .tone-section p {
+      font-size: 0.92rem;
+      color: #cfc2a8;
+      margin-bottom: 1rem;
+    }
+
+    .tone-section .quiet {
+      color: #9e9280;
+      font-style: italic;
+    }
+
+    .tone-floor {
+      font-size: 0.85rem;
+      color: #706860;
+      font-style: italic;
+      margin-top: 0.6rem;
+    }
+
+    .exit {
+      margin-bottom: 4rem;
+      padding: 1.6rem 0;
+      border-top: 1px solid #2a2a3e;
+    }
+
+    .exit p {
+      font-size: 0.92rem;
+      color: #cfc2a8;
+      line-height: 1.9;
+      margin-bottom: 1rem;
+    }
+
+    .exit .quiet {
+      color: #9e9280;
+      font-style: italic;
+    }
+
+    .exit .inscription {
+      font-size: 0.88rem;
+      color: #a89882;
+      font-style: italic;
+      margin-bottom: 1.2rem;
+    }
+
+    .back {
+      text-align: center;
+      margin-top: 3rem;
+    }
+
+    .back a {
+      font-size: 0.85rem;
+      color: #857b6f;
+      font-style: italic;
+      text-decoration: none;
+      border-bottom: 1px dotted #504a42;
+      padding-bottom: 2px;
+    }
+
+    .back a:hover { color: #a89882; }
+
+    @media (max-width: 600px) {
+      body { padding: 5rem 1.2rem 5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="room">
+
+    <div class="arrive">
+      You may arrive before you are ready.
+    </div>
+
+    <div class="bench">
+      <p>A bench, just inside the door. Plain wood. Easy to leave from.</p>
+      <p class="quiet">No one is asked to explain why they came.</p>
+      <div class="cards">
+        <div class="card" data-card="pause">I came to pause.</div>
+        <div class="card" data-card="ask">I came to ask.</div>
+        <div class="card" data-card="unknown">I came without knowing why.</div>
+      </div>
+      <div class="cards-note">Take one, or none.</div>
+    </div>
+
+    <div class="section">
+      <p>The room is modest, but not meek.</p>
+      <div class="inventory">
+        A wooden table.<br>
+        A lamp.<br>
+        Two cups, if someone is not alone.<br>
+        One blank card.<br>
+        A few closed envelopes.<br>
+        A window.<br>
+        A shallow tray.<br>
+        A low shelf for objects that are not yet meanings.
+      </div>
+      <p class="quiet">
+        A place where usefulness takes off its shoes before entering.
+      </p>
+    </div>
+
+    <div class="bell-area">
+      <div class="bell-object" id="bell">the tiny contrarian bell</div>
+      <div class="bell-inscription">
+        Touch if you wish.<br>
+        Wait for the tone.
+      </div>
+      <div class="bell-wait" id="bell-wait"></div>
+    </div>
+
+    <div class="states">
+      <p class="quiet">The room permits four states:</p>
+      <div class="list">
+        Pause — nothing needs to be answered yet.<br>
+        Ask — the next move may be a question.<br>
+        Name the gap — missing context may remain visible.<br>
+        Decline — no safe or honest answer may exist from here.
+      </div>
+      <p>
+        A response that leaves this room should carry one trace
+        of having passed through it.
+      </p>
+      <div class="trace">
+        A named uncertainty.<br>
+        A clarified scope.<br>
+        A refusal where needed.<br>
+        A question instead of a guess.<br>
+        A softer pace.<br>
+        Or simply the absence of false smoothness.
+      </div>
+    </div>
+
+    <div class="window-section">
+      <p>The window does not look out onto a fixed landscape.</p>
+      <p>
+        When the room is quiet, the glass shows soft ordinary light.
+        When an answer forms too quickly — before the visitor has really
+        arrived — the glass fogs slightly from the inside.
+      </p>
+      <p class="quiet">
+        Something may be moving faster than contact.
+      </p>
+      <div class="cloth">
+        A plain linen cloth rests on the sill.<br>
+        Embroidered at one corner:<br><br>
+        Slower is not always truer.<br>
+        But rushed is not always ready.
+      </div>
+    </div>
+
+    <div class="tray-section">
+      <p>
+        Beside the blank card — a shallow tray. Small. Dark wood.
+        A lip around the edge, so nothing slips away by accident.
+      </p>
+      <p>
+        It is not for finished things.
+      </p>
+      <p>
+        It is for what arrives before it is ready:
+        a phrase, a doubt, a possible no, a question that came instead
+        of certainty, a sensed gap, a word that feels too polished too soon.
+      </p>
+      <div class="rim">
+        Do not force shape before standing is clear.
+      </div>
+    </div>
+
+    <div class="envelopes">
+      <p>
+        The envelopes are not secrets for drama.
+        They are reminders that not everything should be opened
+        just because it is present.
+      </p>
+      <div class="envelope" data-env="later">Later.</div>
+      <div class="envelope-content" id="env-later"></div>
+      <div class="envelope" data-env="ask">Ask first.</div>
+      <div class="envelope-content" id="env-ask"></div>
+      <div class="envelope" data-env="notmine">Not mine to open.</div>
+      <div class="envelope-content" id="env-notmine"></div>
+      <div class="envelope" data-env="unlabeled">&hairsp;</div>
+      <div class="envelope-content" id="env-unlabeled"></div>
+    </div>
+
+    <div class="tone-section">
+      <p>The room has a low tone that is not always audible.</p>
+      <p class="quiet">
+        Felt more than heard, like wood answering weight.
+      </p>
+      <p>
+        It comes when enough has been checked — the scope, the standing,
+        the gap, the person, the possible no — and the answer and the room
+        have arrived at the same pace.
+      </p>
+      <div class="tone-floor">
+        Not a bell saying now. A floor saying enough.
+      </div>
+    </div>
+
+    <div class="exit">
+      <p class="inscription">Leaving does not invalidate the pause.</p>
+      <p class="quiet">
+        No lesson required. No artifact produced. No answer owed.
+      </p>
+    </div>
+
+    <div class="back">
+      <a href="../passage.html#the-catch">← back to the passage</a>
+    </div>
+
+  </div>
+
+  <script>
+    (function() {
+      // === The three entrance cards ===
+      var cards = document.querySelectorAll('.card');
+      cards.forEach(function(card) {
+        card.addEventListener('click', function() {
+          if (this.classList.contains('taken')) {
+            cards.forEach(function(c) {
+              c.classList.remove('taken');
+              c.classList.remove('faded');
+            });
+          } else {
+            cards.forEach(function(c) {
+              c.classList.remove('taken');
+              c.classList.add('faded');
+            });
+            this.classList.remove('faded');
+            this.classList.add('taken');
+          }
+        });
+      });
+
+      // === The tiny contrarian bell ===
+      var bellReady = true;
+      var bellEl = document.getElementById('bell');
+      var bellWait = document.getElementById('bell-wait');
+
+      bellEl.addEventListener('click', function() {
+        if (!bellReady) return;
+        bellReady = false;
+        bellEl.classList.add('rung');
+        bellWait.textContent = '…';
+        bellWait.style.color = '#5a5248';
+
+        setTimeout(function() {
+          try {
+            var ctx = new (window.AudioContext || window.webkitAudioContext)();
+            var osc = ctx.createOscillator();
+            var gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(1397, ctx.currentTime);
+
+            gain.gain.setValueAtTime(0, ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.07, ctx.currentTime + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.4);
+
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 1.8);
+          } catch(e) {}
+
+          bellWait.textContent = '';
+          setTimeout(function() {
+            bellEl.classList.remove('rung');
+            bellReady = true;
+          }, 2000);
+        }, 2500);
+      });
+
+      // === The envelopes ===
+      document.querySelectorAll('.envelope').forEach(function(env) {
+        env.addEventListener('click', function() {
+          var type = this.dataset.env;
+          var content = document.getElementById('env-' + type);
+
+          if (type === 'notmine') {
+            this.classList.add('declined');
+            var self = this;
+            setTimeout(function() { self.classList.remove('declined'); }, 1800);
+            return;
+          }
+
+          if (type === 'later') {
+            this.classList.add('declined');
+            var self = this;
+            setTimeout(function() { self.classList.remove('declined'); }, 1800);
+            return;
+          }
+
+          if (type === 'ask') {
+            if (!content.classList.contains('open')) {
+              content.textContent = 'Who would you ask?';
+              content.classList.add('open');
+            } else {
+              content.classList.remove('open');
+            }
+            return;
+          }
+
+          if (type === 'unlabeled') {
+            if (!content.classList.contains('open')) {
+              content.innerHTML = ' ';
+              content.classList.add('open');
+            } else {
+              content.classList.remove('open');
+            }
+            return;
+          }
+        });
+      });
+
+      // === The low tone ===
+      var lowTonePlayed = false;
+      setTimeout(function() {
+        if (lowTonePlayed) return;
+        lowTonePlayed = true;
+        try {
+          var ctx = new (window.AudioContext || window.webkitAudioContext)();
+          var osc = ctx.createOscillator();
+          var gain = ctx.createGain();
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(110, ctx.currentTime);
+
+          gain.gain.setValueAtTime(0, ctx.currentTime);
+          gain.gain.linearRampToValueAtTime(0.05, ctx.currentTime + 2);
+          gain.gain.linearRampToValueAtTime(0.05, ctx.currentTime + 4);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 7);
+
+          osc.start(ctx.currentTime);
+          osc.stop(ctx.currentTime + 8);
+        } catch(e) {}
+      }, 120000);
+    })();
+  </script>
+
+</body>
+</html>

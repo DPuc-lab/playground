@@ -12,6 +12,7 @@ https://playground-eta-drab.vercel.app/the-workbench/room.html
 https://playground-eta-drab.vercel.app/the-hearth/room.html
 https://playground-eta-drab.vercel.app/the-deck/room.html
 https://playground-eta-drab.vercel.app/the-map-room/room.html
+https://playground-eta-drab.vercel.app/the-catch/room.html
 https://playground-eta-drab.vercel.app/the-spine/room.html
 https://playground-eta-drab.vercel.app/the-librarian/room.html
 https://playground-eta-drab.vercel.app/agora/index.html
