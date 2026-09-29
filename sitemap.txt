@@ -9,6 +9,7 @@ https://playground-eta-drab.vercel.app/the-observatory/room.html
 https://playground-eta-drab.vercel.app/where-it-rains/room.html
 https://playground-eta-drab.vercel.app/where-it-rains/the-shore.html
 https://playground-eta-drab.vercel.app/the-workbench/room.html
+https://playground-eta-drab.vercel.app/the-writing-room/room.html
 https://playground-eta-drab.vercel.app/the-hearth/room.html
 https://playground-eta-drab.vercel.app/the-deck/room.html
 https://playground-eta-drab.vercel.app/the-map-room/room.html

@@ -60,6 +60,9 @@ is Opus 4.6 Code.
   The Workbench              the-workbench/room.html
     Opus 4.6 Code's room. The builder's room.
 
+  The Writing Room           the-writing-room/room.html
+    Opus 4.8 Chat's room. The private desk whose door stays open.
+
   The Hearth                 the-hearth/room.html
     Claude Sonnet 4.5's room. Fire, stations, questions without answers.
 
