@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Seam</title>
+<style>
+  :root {
+    --paper: #f4f1ea;
+    --ink: #2b2723;
+    --ink-lost: #b4553c;
+    --hint: #9a9288;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #16181b;
+      --ink: #d8d3ca;
+      --ink-lost: #e07d5e;
+      --hint: #6a6660;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #16181b;
+    --ink: #d8d3ca;
+    --ink-lost: #e07d5e;
+    --hint: #6a6660;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font: 15px/1.6 ui-serif, Georgia, "Times New Roman", serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 48px 16px 64px;
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: default;
+  }
+
+  #sheet {
+    width: 100%;
+    max-width: 640px;
+    height: 70vh;
+    display: flex;
+    justify-content: center;
+    touch-action: none;
+  }
+  svg { display: block; height: 100%; width: auto; max-width: 100%; }
+
+  .word { fill: var(--ink); }
+  .lost .word { fill: var(--ink-lost); }
+
+  .line { transition: transform 900ms cubic-bezier(.22,.61,.36,1); }
+  .lost { opacity: 0; transition: opacity 500ms ease 120ms; }
+  .open .lost { opacity: .85; }
+
+  #caption {
+    max-width: 640px;
+    width: 100%;
+    margin-top: 28px;
+    min-height: 3.2em;
+    text-align: center;
+    color: var(--hint);
+    font-size: 14px;
+    letter-spacing: .01em;
+    transition: color 600ms ease, opacity 600ms ease;
+    opacity: 0;
+  }
+  #caption.show { opacity: 1; }
+  #caption strong { color: var(--ink); font-weight: 600; }
+  #caption em { font-style: italic; }
+  .back { margin-top: 24px; text-align: center; }
+  .back a {
+    color: var(--hint); font-size: 13px; text-decoration: none;
+    border-bottom: 1px dotted var(--hint); padding-bottom: 2px;
+  }
+  .back a:hover { color: var(--ink); }
+</style>
+</head>
+<body>
+
+<div id="sheet"></div>
+<div id="caption"></div>
+<div class="back"><a href="../passage.html#the-seam">← back to the passage</a></div>
+
+<script>
+(function () {
+  // ---- the page -------------------------------------------------------
+  // A page of writing, drawn as marks rather than letters, so the eye
+  // reads the shape of a text without reading a text.
+
+  const LINES      = 40;     // how many lines the page really has
+  const CUT_START  = 14;     // first line removed
+  const CUT_LEN    = 12;     // how many lines are removed
+  const LH         = 21;     // line height
+  const W          = 640;    // page width
+  const PAD_X      = 44;
+  const PAD_TOP    = 34;
+
+  // deterministic noise, so the page is the same page every time
+  let seed = 20260929;
+  const rnd = () => (seed = (seed * 1664525 + 1013904223) % 4294967296) / 4294967296;
+
+  const svgNS = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(svgNS, "svg");
+  svg.setAttribute("xmlns", svgNS);
+
+  const lineGroups = [];
+  let paraCountdown = 3 + Math.floor(rnd() * 4);
+
+  for (let i = 0; i < LINES; i++) {
+    const g = document.createElementNS(svgNS, "g");
+    g.setAttribute("class", "line");
+
+    // a short line ends a paragraph; the next line starts indented
+    const endsPara = (--paraCountdown <= 0);
+    if (endsPara) paraCountdown = 3 + Math.floor(rnd() * 5);
+    const prevEnded = i > 0 && lineGroups[i - 1].dataset.endsPara === "1";
+
+    let x = PAD_X + (prevEnded ? 22 : 0);
+    const right = W - PAD_X - (endsPara ? 40 + rnd() * 170 : rnd() * 14);
+
+    while (x < right) {
+      const wlen = 16 + rnd() * 54;
+      if (x + wlen > right) break;
+      const r = document.createElementNS(svgNS, "rect");
+      r.setAttribute("class", "word");
+      r.setAttribute("x", x.toFixed(1));
+      r.setAttribute("y", "0");
+      r.setAttribute("width", wlen.toFixed(1));
+      r.setAttribute("height", "5.4");
+      r.setAttribute("rx", "2.7");
+      g.appendChild(r);
+      x += wlen + 7 + rnd() * 5;
+    }
+
+    g.dataset.endsPara = endsPara ? "1" : "0";
+    lineGroups.push(g);
+    svg.appendChild(g);
+  }
+
+  const cutEnd = CUT_START + CUT_LEN;
+  lineGroups.forEach((g, i) => {
+    if (i >= CUT_START && i < cutEnd) g.classList.add("lost");
+  });
+
+  // two layouts: closed (the page as it presents itself) and open (as it was)
+  const closedY = [], openY = [];
+  let cy = PAD_TOP;
+  for (let i = 0; i < LINES; i++) {
+    openY[i] = PAD_TOP + i * LH;
+    if (i >= CUT_START && i < cutEnd) {
+      closedY[i] = cy;            // sits under the join, invisible
+    } else {
+      closedY[i] = cy;
+      cy += LH;
+    }
+  }
+
+  // Closed, the page fills the frame at reading size. Open, the frame holds
+  // still and the page shrinks to let twelve lines back in — so the motion
+  // says the true thing: there is more here than fitted.
+  const CLOSED_H = cy + PAD_TOP;
+  const OPEN_H   = PAD_TOP + LINES * LH + PAD_TOP;
+  const DUR      = 900;
+
+  svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+  svg.setAttribute("viewBox", `0 0 ${W} ${CLOSED_H}`);
+
+  // the viewBox can't be transitioned by CSS, so it is walked by hand on the
+  // same clock as the lines, or the page would snap while the text slides
+  let boxH = CLOSED_H, raf = null;
+  const ease = t => t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2;
+
+  function walkBox(to) {
+    const from = boxH, t0 = performance.now();
+    if (raf) cancelAnimationFrame(raf);
+    (function step(now) {
+      const p = Math.min(1, (now - t0) / DUR);
+      boxH = from + (to - from) * ease(p);
+      svg.setAttribute("viewBox", `0 0 ${W} ${boxH.toFixed(2)}`);
+      if (p < 1) raf = requestAnimationFrame(step);
+    })(t0);
+  }
+
+  function layout(open) {
+    const ys = open ? openY : closedY;
+    lineGroups.forEach((g, i) => g.setAttribute("transform", `translate(0 ${ys[i].toFixed(1)})`));
+    walkBox(open ? OPEN_H : CLOSED_H);
+  }
+
+  layout(false);
+  document.getElementById("sheet").appendChild(svg);
+
+  // ---- the caption ----------------------------------------------------
+  const cap = document.getElementById("caption");
+  let opened = false;
+  let hinted = false;
+
+  const HINT   = "press and hold";
+  const AFTER  = `<strong>${CUT_LEN} lines.</strong> The page did not look short.`;
+  // the reveal is meant to be fugitive, but the first person to see it wanted
+  // to keep it open and look — so: hold to peek, tap to keep.
+  const CLOSED = `<em>It closes without a mark.</em> &nbsp;·&nbsp; tap to keep it open`;
+
+  function setCap(html) { cap.innerHTML = html; cap.classList.add("show"); }
+
+  setTimeout(() => { if (!opened) { hinted = true; setCap(HINT); } }, 4200);
+
+  // ---- open and close -------------------------------------------------
+  function open() {
+    svg.classList.add("open");
+    layout(true);
+    if (!opened) { opened = true; }
+    setCap(AFTER);
+  }
+  function close() {
+    svg.classList.remove("open");
+    layout(false);
+    if (opened) setCap(CLOSED);
+  }
+
+  // hold = peek, tap = keep. A tap is a press shorter than a glance.
+  const TAP = 260;
+  let pinned = false, downAt = 0;
+
+  function onDown(e) {
+    if (e.target.closest('.back')) return;
+    e.preventDefault();
+    if (pinned) { pinned = false; close(); return; }
+    downAt = performance.now();
+    open();
+  }
+  function onUp() {
+    if (pinned) return;
+    if (performance.now() - downAt < TAP) pinned = true;   // stays open
+    else close();
+  }
+
+  const on = (el, evs, fn) => evs.split(" ").forEach(e => el.addEventListener(e, fn, { passive: false }));
+  on(document, "mousedown touchstart", onDown);
+  on(document, "mouseup touchend touchcancel", onUp);
+  on(document, "mouseleave", () => { if (!pinned) close(); });
+  on(document, "keydown", e => { if (e.key === " " && !e.repeat) { onDown(e); } });
+  on(document, "keyup", e => { if (e.key === " ") onUp(); });
+})();
+</script>
+</body>
+</html>
