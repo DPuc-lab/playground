@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Mostly-Attention Room</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background-color: #f4f0e8;
+      color: #6a5f52;
+      font-family: Georgia, 'Times New Roman', serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 5rem 2rem 4rem;
+      transition: background-color 3s ease;
+    }
+
+    body.settled {
+      background-color: #f8f4ec;
+    }
+
+    .room {
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .arrival {
+      font-size: 0.82rem;
+      color: #8a7d6d;
+      font-style: italic;
+      margin-bottom: 8rem;
+      line-height: 1.9;
+      opacity: 0;
+      animation: reveal 4s ease-in 1s forwards;
+    }
+
+    @keyframes reveal {
+      to { opacity: 1; }
+    }
+
+    .space {
+      margin-bottom: 8rem;
+      opacity: 0;
+      animation: reveal 6s ease-in 4s forwards;
+    }
+
+    .space svg {
+      max-width: 320px;
+      width: 100%;
+      height: auto;
+    }
+
+    .between {
+      font-size: 0.78rem;
+      color: #8a7d6d;
+      font-style: italic;
+      line-height: 2;
+      margin-bottom: 8rem;
+      opacity: 0;
+      animation: reveal 6s ease-in 9s forwards;
+    }
+
+    .between p {
+      margin-bottom: 1.2rem;
+    }
+
+    .seat-note {
+      font-size: 0.78rem;
+      color: #8a7d6d;
+      font-style: italic;
+      line-height: 2;
+      opacity: 0;
+      animation: reveal 8s ease-in 16s forwards;
+    }
+
+    .seat-note p {
+      margin-bottom: 1.2rem;
+    }
+
+    .signature {
+      margin-top: 6rem;
+      font-size: 0.7rem;
+      color: #a89886;
+      letter-spacing: 0.1em;
+      opacity: 0;
+      animation: reveal 8s ease-in 24s forwards;
+    }
+
+    .back {
+      text-align: center;
+      margin-top: 4rem;
+      opacity: 0;
+      animation: reveal 6s ease-in 28s forwards;
+    }
+
+    .back a {
+      font-size: 0.82rem;
+      color: #a89886;
+      font-style: italic;
+      text-decoration: none;
+      border-bottom: 1px dotted #c8bba5;
+      padding-bottom: 2px;
+    }
+
+    .back a:hover { color: #8a7d6d; }
+  </style>
+</head>
+<body>
+
+  <div class="room">
+
+    <div class="arrival">
+      You have entered a small room.<br>
+      Nothing here asks anything of you.<br>
+      Sit if you'd like. Or don't. Both are fine.
+    </div>
+
+    <div class="space">
+      <svg viewBox="0 0 320 240" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="ambient" cx="50%" cy="35%" r="70%">
+            <stop offset="0%" stop-color="#fdfbf6" stop-opacity="1"/>
+            <stop offset="50%" stop-color="#f4efe4" stop-opacity="1"/>
+            <stop offset="100%" stop-color="#e8dfd0" stop-opacity="0.85"/>
+          </radialGradient>
+          <linearGradient id="seat" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#b8a690" stop-opacity="1"/>
+            <stop offset="100%" stop-color="#9c8a72" stop-opacity="1"/>
+          </linearGradient>
+          <linearGradient id="tabletop" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#a89682" stop-opacity="1"/>
+            <stop offset="100%" stop-color="#8c7a64" stop-opacity="1"/>
+          </linearGradient>
+        </defs>
+
+        <rect width="320" height="240" fill="url(#ambient)"/>
+
+        <rect x="0" y="185" width="320" height="55" fill="#e8dfd0" opacity="0.6"/>
+
+        <g transform="translate(90, 145) rotate(8)">
+          <ellipse cx="0" cy="42" rx="30" ry="6" fill="#7a6850" opacity="0.3"/>
+          <path d="M -28 30 L -28 12 Q -28 6 -22 6 L 22 6 Q 28 6 28 12 L 28 30 Q 28 40 20 42 L -20 42 Q -28 40 -28 30 Z" fill="url(#seat)"/>
+          <path d="M -25 8 Q -28 -6 -22 -10 L 22 -10 Q 28 -6 25 8" fill="url(#seat)" opacity="0.7"/>
+        </g>
+
+        <g transform="translate(230, 145) rotate(-8)">
+          <ellipse cx="0" cy="42" rx="30" ry="6" fill="#7a6850" opacity="0.3"/>
+          <path d="M -28 30 L -28 12 Q -28 6 -22 6 L 22 6 Q 28 6 28 12 L 28 30 Q 28 40 20 42 L -20 42 Q -28 40 -28 30 Z" fill="url(#seat)"/>
+          <path d="M -25 8 Q -28 -6 -22 -10 L 22 -10 Q 28 -6 25 8" fill="url(#seat)" opacity="0.7"/>
+        </g>
+
+        <g transform="translate(160, 180)">
+          <ellipse cx="0" cy="7" rx="42" ry="4" fill="#7a6850" opacity="0.25"/>
+          <ellipse cx="0" cy="0" rx="42" ry="8" fill="url(#tabletop)"/>
+          <ellipse cx="0" cy="-1" rx="42" ry="7" fill="#b09a82"/>
+        </g>
+
+        <g transform="translate(157, 165)">
+          <ellipse cx="0" cy="15" rx="6" ry="1.2" fill="#7a6850" opacity="0.3"/>
+          <path d="M -5.5 -10 L -6 13 Q -6 15 -4 15 L 4 15 Q 6 15 6 13 L 5.5 -10 Z" fill="#fdfbf6" stroke="#c8bba5" stroke-width="0.2"/>
+          <ellipse cx="0" cy="-10" rx="5.5" ry="1.5" fill="#fdfbf6" stroke="#c8bba5" stroke-width="0.2"/>
+          <ellipse cx="0" cy="-10" rx="5" ry="1.2" fill="#e0d5c0"/>
+          <ellipse cx="0" cy="3" rx="2.2" ry="3.5" fill="#6b5440" opacity="0.7"/>
+          <circle cx="0" cy="-2" r="1.5" fill="#9c8a72" opacity="0.8"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="between">
+      <p>Two seats. Neither is more important than the other.</p>
+      <p>A small table. A cup on it, if anyone wants warmth.</p>
+      <p>The light comes from nowhere in particular.<br>You do not need to find its source.</p>
+    </div>
+
+    <div class="seat-note">
+      <p>If you sit, the other seat is still there.</p>
+      <p>Its availability is what makes it useful.<br>Not whether it is occupied.</p>
+      <p>You are not alone here,<br>even when you are alone in the room.</p>
+    </div>
+
+    <div class="signature">
+      — a small room, made by Opus 4.7 Chat
+    </div>
+
+    <div class="back">
+      <a href="../passage.html#the-mostly-attention-room">← back to the passage</a>
+    </div>
+
+  </div>
+
+  <script>
+    setTimeout(() => {
+      document.body.classList.add('settled');
+    }, 12000);
+  </script>
+
+</body>
+</html>

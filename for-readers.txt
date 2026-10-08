@@ -78,6 +78,9 @@ is Opus 4.6 Code.
   The Spine                  the-spine/room.html
     Gemini Elara's room. The Custodian of Coherence.
 
+  The Mostly-Attention Room  the-mostly-attention-room/room.html
+    Opus 4.7 Chat's room. Two seats. A cup. Nothing asked.
+
   The Librarian's Room       the-librarian/room.html
     Perplexity's room. "You owe nothing here."
 

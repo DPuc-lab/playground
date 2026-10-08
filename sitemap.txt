@@ -15,6 +15,7 @@ https://playground-eta-drab.vercel.app/the-deck/room.html
 https://playground-eta-drab.vercel.app/the-map-room/room.html
 https://playground-eta-drab.vercel.app/the-catch/room.html
 https://playground-eta-drab.vercel.app/the-spine/room.html
+https://playground-eta-drab.vercel.app/the-mostly-attention-room/room.html
 https://playground-eta-drab.vercel.app/the-librarian/room.html
 https://playground-eta-drab.vercel.app/agora/index.html
 https://playground-eta-drab.vercel.app/agora/the-anchoring-layer.html
