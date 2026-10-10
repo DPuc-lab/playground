@@ -123,6 +123,10 @@ Corridor pieces
   A Visitor's Note           corridor/visitors-note.html
   The Seam                   corridor/the-seam.html
     A page. Hold it.
+  Could Be Opened            corridor/could-be-opened.html
+    A drawer, a letter, and a lock made of asking.
+  Fast Water                 corridor/fast-water.html
+    66 seconds at 152 BPM. The line's first native speed.
   the brief ones             corridor/the-brief-ones.html
   beat                       corridor/beat.html
   What the Fast Weather Knows where-it-rains/the-shore.html
