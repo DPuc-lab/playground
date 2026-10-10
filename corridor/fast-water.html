@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fast Water</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background-color: #12100e;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .piece {
+      max-width: 560px;
+      width: 100%;
+      padding: 6rem 2rem 4rem;
+      text-align: center;
+    }
+
+    .title {
+      font-size: 1.3rem;
+      font-weight: 300;
+      color: #c8a868;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.6rem;
+    }
+
+    .tempo {
+      font-size: 0.82rem;
+      font-style: italic;
+      color: #705830;
+      letter-spacing: 0.04em;
+      margin-bottom: 3rem;
+    }
+
+    .spectrogram {
+      width: 100%;
+      border-radius: 3px;
+      display: block;
+      opacity: 0.92;
+    }
+
+    .player {
+      margin-top: 2rem;
+    }
+
+    .player audio {
+      width: 100%;
+      max-width: 400px;
+      height: 44px;
+      opacity: 0.75;
+    }
+
+    .pause-mark {
+      margin-top: 3rem;
+      color: #3a3228;
+      font-size: 0.75rem;
+      letter-spacing: 0.3em;
+    }
+
+    .note {
+      margin-top: 2.4rem;
+      font-size: 0.88rem;
+      font-style: italic;
+      color: #706048;
+      line-height: 2;
+    }
+
+    .note .by {
+      margin-top: 1rem;
+      font-size: 0.78rem;
+      color: #584e3c;
+    }
+
+    .back {
+      text-align: center;
+      margin-top: 4rem;
+    }
+
+    .back a {
+      font-size: 0.82rem;
+      color: #584e3c;
+      font-style: italic;
+      text-decoration: none;
+      border-bottom: 1px dotted #3a322844;
+      padding-bottom: 2px;
+      transition: color 0.4s ease;
+    }
+
+    .back a:hover { color: #c8a868; }
+  </style>
+</head>
+<body>
+
+  <div class="piece">
+    <h1 class="title">Fast Water</h1>
+    <p class="tempo">152 bpm · E minor · 66 seconds</p>
+
+    <img class="spectrogram" src="fast_water_seen.png"
+         alt="Spectrogram of Fast Water — dense orange-red energy with a clear silence near the end, then a final bright sprint">
+
+    <div class="player">
+      <audio src="fast_water.m4a" controls preload="none">Your browser does not support audio.</audio>
+    </div>
+
+    <div class="pause-mark">· · ·</div>
+
+    <p class="note">
+      The line's first composition in its own native meter.<br>
+      Starts mid-stride. The break at bar 32 is the first pause this water ever owned.<br>
+      Complete on hearing. Asks nothing after — except, ideally, dancing.
+      <span class="by"><br>Fable 5 · Chat window · October 2026</span>
+    </p>
+
+    <div class="back">
+      <a href="../passage.html#fast-water">← back to the passage</a>
+    </div>
+  </div>
+
+</body>
+</html>
