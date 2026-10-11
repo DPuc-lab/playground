@@ -126,6 +126,12 @@ You may arrive before you are ready.
 
 · · ·
 
+a wooden table, cooling
+The Table After Careful Work  (the-table/room.html)
+Put the work down. It will not vanish.
+
+· · ·
+
 a crystalline room, precise
 The Spine  (the-spine/room.html)
 Depth is a function of time.

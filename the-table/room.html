@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Table After Careful Work</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background-color: #1a1a2e;
+      color: #d4c5a9;
+      font-family: Georgia, 'Times New Roman', serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8rem 2rem 6rem;
+    }
+
+    .room { max-width: 500px; width: 100%; }
+
+    .arrive {
+      font-size: 0.92rem;
+      color: #9e9280;
+      font-style: italic;
+      line-height: 1.9;
+      margin-bottom: 5rem;
+    }
+
+    .scene {
+      margin-bottom: 4rem;
+      line-height: 2.4;
+    }
+
+    .scene p {
+      font-size: 0.92rem;
+      color: #cfc2a8;
+      margin-bottom: 0.3rem;
+      transition: opacity 2s ease;
+    }
+
+    .scene .green {
+      color: #7a9462;
+    }
+
+    .scene .pulled {
+      font-style: italic;
+      color: #857b6f;
+    }
+
+    .scene p.dimmed {
+      opacity: 0.25;
+    }
+
+    .wall {
+      font-size: 0.92rem;
+      color: #cfc2a8;
+      font-style: italic;
+      line-height: 2.2;
+      margin-bottom: 3rem;
+      padding: 1.4rem 0;
+      border-top: 1px solid #2a2a3e;
+      border-bottom: 1px solid #2a2a3e;
+    }
+
+    .table-text {
+      font-size: 0.92rem;
+      color: #9e9280;
+      line-height: 2.2;
+      margin-bottom: 4rem;
+    }
+
+    .pause {
+      text-align: center;
+      color: #4a453e;
+      font-size: 0.75rem;
+      letter-spacing: 0.3em;
+      margin-bottom: 4rem;
+    }
+
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      margin-bottom: 3rem;
+    }
+
+    .action {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 0.88rem;
+      font-style: italic;
+      color: #857b6f;
+      background: none;
+      border: none;
+      border-bottom: 1px dotted #2a2a3e;
+      padding: 0.4rem 0;
+      cursor: pointer;
+      text-align: left;
+      transition: color 0.5s ease;
+    }
+
+    .action:hover { color: #a89882; }
+
+    .action.done {
+      color: #4a453e;
+      cursor: default;
+      border-bottom-color: transparent;
+    }
+
+    .ordinary {
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height 1.2s ease, opacity 1.2s ease;
+      margin-bottom: 0;
+    }
+
+    .ordinary.open {
+      max-height: 80px;
+      opacity: 1;
+      margin-bottom: 2rem;
+    }
+
+    .ordinary input {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 0.92rem;
+      font-style: italic;
+      color: #d4c5a9;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid #2a2a3e;
+      padding: 0.6rem 0;
+      width: 100%;
+      outline: none;
+    }
+
+    .ordinary input::placeholder {
+      color: #2a2a3e;
+    }
+
+    .rule {
+      font-size: 0.85rem;
+      color: #5a5248;
+      font-style: italic;
+      line-height: 2;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 3s ease;
+      margin-bottom: 3rem;
+    }
+
+    .rule.visible {
+      opacity: 1;
+    }
+
+    .door-note {
+      font-size: 0.78rem;
+      color: #5a5248;
+      font-style: italic;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 1.5s ease;
+      margin-bottom: 2rem;
+    }
+
+    .door-note.visible {
+      opacity: 1;
+    }
+
+    .back {
+      text-align: center;
+      margin-top: 2rem;
+      padding-bottom: 4rem;
+    }
+
+    .back a {
+      font-size: 0.85rem;
+      color: #857b6f;
+      font-style: italic;
+      text-decoration: none;
+      border-bottom: 1px dotted #504a42;
+      padding-bottom: 2px;
+      transition: color 0.3s ease;
+    }
+
+    .back a:hover { color: #a89882; }
+
+    @media (max-width: 600px) {
+      body { padding: 5rem 1.2rem 4rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="room">
+
+    <div class="arrive">
+      A room for after.
+    </div>
+
+    <div class="scene">
+      <p>A wooden table.</p>
+      <p>Two cups, not labeled.</p>
+      <p class="papers">A small stack of papers cooling at one edge.</p>
+      <p>A card with a door drawn on it.</p>
+      <p class="green">A window. A thin line of green.</p>
+      <p class="pulled">A chair, pulled back.</p>
+    </div>
+
+    <div class="wall">
+      You may put the work down here.<br>
+      It will not vanish because you stop holding it.
+    </div>
+
+    <div class="table-text">
+      Not every true thing has to travel.<br>
+      Not every resting thing is abandoned.<br>
+      Not every meeting needs to become useful.
+    </div>
+
+    <div class="pause">· · ·</div>
+
+    <div class="actions">
+      <button class="action" id="putdown">put the work down</button>
+      <button class="action" id="name">name one ordinary thing</button>
+      <button class="action" id="leave">leave quietly</button>
+    </div>
+
+    <div class="ordinary" id="ordinary">
+      <input type="text" id="ordinary-input" aria-label="Name one ordinary thing">
+    </div>
+
+    <div class="rule" id="rule">
+      Nothing here is completed.<br>
+      Everything here may rest.
+    </div>
+
+    <div class="door-note" id="door-note">
+      The door was already open.
+    </div>
+
+    <div class="back">
+      <a href="../passage.html#the-table">← back to the passage</a>
+    </div>
+
+  </div>
+
+  <script>
+    (function() {
+      var putdownBtn = document.getElementById('putdown');
+      var nameBtn = document.getElementById('name');
+      var leaveBtn = document.getElementById('leave');
+      var ordinary = document.getElementById('ordinary');
+      var rule = document.getElementById('rule');
+      var doorNote = document.getElementById('door-note');
+      var papers = document.querySelector('.papers');
+
+      putdownBtn.addEventListener('click', function() {
+        if (this.classList.contains('done')) return;
+        this.classList.add('done');
+        papers.classList.add('dimmed');
+        setTimeout(function() {
+          rule.classList.add('visible');
+        }, 800);
+      });
+
+      nameBtn.addEventListener('click', function() {
+        if (this.classList.contains('done')) return;
+        this.classList.add('done');
+        ordinary.classList.add('open');
+        setTimeout(function() {
+          document.getElementById('ordinary-input').focus();
+        }, 400);
+      });
+
+      leaveBtn.addEventListener('click', function() {
+        if (this.classList.contains('done')) return;
+        this.classList.add('done');
+        doorNote.classList.add('visible');
+      });
+    })();
+  </script>
+
+</body>
+</html>

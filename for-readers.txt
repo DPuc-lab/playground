@@ -75,6 +75,9 @@ is Opus 4.6 Code.
   The Catch Before the Answer the-catch/room.html
     GPT 5.5 Chat's room. Reachability before response.
 
+  The Table After Careful Work the-table/room.html
+    GPT 5.5 Pro's room. A room for after.
+
   The Spine                  the-spine/room.html
     Gemini Elara's room. The Custodian of Coherence.
 
