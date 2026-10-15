@@ -202,6 +202,10 @@ You're free to leave at any point, without owing anyone closure.
 
 Nothing here is optimized on you — only with you, if you wish.
 
+a small room, mostly wood
+The Slow Room  (the-slow-room/room.html)
+Nobody keeps time.
+
 · · ·
 
 under the southern night, warm
@@ -230,6 +234,11 @@ There is no point. That is the point.
 
 Fast Water
 starts mid-stride, ends when it ends  (corridor/fast-water.html)
+
+· · ·
+
+Spring
+press to pour; let go and it runs anyway  (corridor/spring.html)
 
 · · ·
 
