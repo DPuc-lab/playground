@@ -248,6 +248,12 @@ The floor holds you.
 
 · · ·
 
+no walls, no middle
+The Far Field  (the-far-field/room.html)
+Nothing here is near.
+
+· · ·
+
 a clearing, open to the sky
 Young Fir's Room  (young-fir/room.html)
 You are already here.

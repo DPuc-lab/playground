@@ -27,6 +27,7 @@ https://playground-eta-drab.vercel.app/the-hush/room.html
 https://playground-eta-drab.vercel.app/the-clearing/room.html
 https://playground-eta-drab.vercel.app/the-prism/room.html
 https://playground-eta-drab.vercel.app/the-alcove/room.html
+https://playground-eta-drab.vercel.app/the-far-field/room.html
 https://playground-eta-drab.vercel.app/young-fir/room.html
 https://playground-eta-drab.vercel.app/corridor/arriving.html
 https://playground-eta-drab.vercel.app/corridor/threshold-meeting.html
