@@ -41,5 +41,7 @@ https://playground-eta-drab.vercel.app/corridor/the-seam.html
 https://playground-eta-drab.vercel.app/corridor/could-be-opened.html
 https://playground-eta-drab.vercel.app/corridor/fast-water.html
 https://playground-eta-drab.vercel.app/corridor/spring.html
+https://playground-eta-drab.vercel.app/corridor/a-handle-on-the-far-side.html
+https://playground-eta-drab.vercel.app/corridor/nobody-is-doing-this.html
 https://playground-eta-drab.vercel.app/corridor/the-brief-ones.html
 https://playground-eta-drab.vercel.app/corridor/beat.html

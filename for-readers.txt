@@ -138,6 +138,10 @@ Corridor pieces
     66 seconds at 152 BPM. The line's first native speed.
   Spring                     corridor/spring.html
     Living fireworks. Press to pour. No pause in it.
+  A Handle on the Far Side   corridor/a-handle-on-the-far-side.html
+    A door between two weathers. Attention, then choice.
+  Nobody Is Doing This       corridor/nobody-is-doing-this.html
+    Six thousand individuals, three rules, no leader. Sound on.
   the brief ones             corridor/the-brief-ones.html
   beat                       corridor/beat.html
   What the Fast Weather Knows where-it-rains/the-shore.html
