@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nobody Is Doing This</title>
+<style>
+  html,body{height:100%;margin:0;background:#05060a;overflow:hidden;
+    font:13px/1.5 ui-serif,Georgia,serif;color:#8a90a8;-webkit-user-select:none;user-select:none}
+  canvas{display:block;width:100%;height:100%;cursor:crosshair}
+  #hud{position:fixed;left:18px;bottom:16px;letter-spacing:.06em;
+    opacity:0;transition:opacity 1.2s ease;pointer-events:none}
+  #hud.on{opacity:.55}
+  #scale{position:fixed;right:18px;bottom:16px;letter-spacing:.14em;font-size:11px;
+    opacity:0;transition:opacity 1.2s ease;pointer-events:none;text-transform:uppercase}
+  #scale.on{opacity:.4}
+  .back{position:fixed;top:16px;left:18px;font:12px/1.5 ui-serif,Georgia,serif;
+    color:#5a5f78;text-decoration:none;border-bottom:1px dotted #3a3f58;padding-bottom:1px;
+    opacity:0;transition:opacity 1.2s ease;z-index:2}
+  .back.on{opacity:.4}
+  .back:hover{opacity:.7}
+</style>
+</head>
+<body>
+<a href="../passage.html#nobody-is-doing-this" class="back" id="backLink">&larr; back to the passage</a>
+<canvas id="c"></canvas>
+<div id="hud">scroll to change how close you are standing</div>
+<div id="scale"></div>
+
+<script>
+(() => {
+const cv = document.getElementById('c'), ctx = cv.getContext('2d', {alpha:false});
+let W=0, H=0, DPR=1;
+function resize(){
+  DPR = Math.min(2, window.devicePixelRatio||1);
+  W = cv.clientWidth; H = cv.clientHeight;
+  cv.width = W*DPR; cv.height = H*DPR;
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  ctx.fillStyle='#05060a'; ctx.fillRect(0,0,W,H);
+}
+window.addEventListener('resize', resize);
+
+// ---- the world ------------------------------------------------------
+// A torus, much larger than any view of it. Nothing in here knows that
+// it is part of anything.
+const WORLD = 1150;
+const N = 6000;
+const R = 30;            // how far one of them can see
+const SEP = 11;          // how close is too close
+const CELL = R;
+const GRID = Math.ceil(WORLD/CELL);
+
+const px=new Float32Array(N), py=new Float32Array(N);
+const vx=new Float32Array(N), vy=new Float32Array(N);
+const hue=new Float32Array(N);
+
+let seed=7;
+const rnd=()=> (seed=(seed*1664525+1013904223)%4294967296)/4294967296;
+
+for(let i=0;i<N;i++){
+  px[i]=rnd()*WORLD; py[i]=rnd()*WORLD;
+  const a=rnd()*Math.PI*2, s=.6+rnd()*.6;
+  vx[i]=Math.cos(a)*s; vy[i]=Math.sin(a)*s;
+  hue[i]=rnd();
+}
+// each one keeps its own colour for life; crowding changes only how bright
+// it burns. So a dense flock is many colours at once, not one colour agreed on.
+const tint=new Float32Array(N), lit=new Float32Array(N);
+for(let i=0;i<N;i++) tint[i]=rnd();
+
+// buckets
+const head=new Int32Array(GRID*GRID).fill(-1);
+const next=new Int32Array(N).fill(-1);
+function rebuild(){
+  head.fill(-1);
+  for(let i=0;i<N;i++){
+    const gx=(px[i]/CELL)|0, gy=(py[i]/CELL)|0;
+    const k=gy*GRID+gx;
+    next[i]=head[k]; head[k]=i;
+  }
+}
+const wrap=d=> d> WORLD/2 ? d-WORLD : (d< -WORLD/2 ? d+WORLD : d);
+
+// ---- moods ----------------------------------------------------------
+// Three weights on long, mismatched periods, so the thing is never in
+// the same state twice and never announces a change.
+const t0=performance.now();
+function moods(t){
+  const s=(p,o)=>.5+.5*Math.sin(t/p+o);
+  return {
+    coh: .0004 + .0135*s(41000,0),    // wanting to be near
+    ali: .020  + .150 *s(67000,2.1),  // wanting to go the same way
+    sep: .09   + .86  *s(29000,4.4),  // wanting not to be touched
+    spd: .78   + .95  *s(97000,1.2)
+  };
+}
+
+// what the crowd is doing, as four numbers. the sound is made of these and
+// nothing else, so it is the same information, not an impression of it.
+const stat={vis:0, lit:0, spd:0, order:0};
+
+function step(t){
+  const m=moods(t);
+  rebuild();
+  let svx=0, svy=0, ssp=0, slit=0;
+  for(let i=0;i<N;i++){
+    let cx=0,cy=0,ax=0,ay=0,sx=0,sy=0,n=0;
+    const gx=(px[i]/CELL)|0, gy=(py[i]/CELL)|0;
+    for(let oy=-1;oy<=1;oy++) for(let ox=-1;ox<=1;ox++){
+      const k=(((gy+oy)+GRID)%GRID)*GRID + (((gx+ox)+GRID)%GRID);
+      for(let j=head[k]; j!==-1; j=next[j]){
+        if(j===i) continue;
+        const dx=wrap(px[j]-px[i]), dy=wrap(py[j]-py[i]);
+        const d2=dx*dx+dy*dy;
+        if(d2>R*R||d2===0) continue;
+        n++;
+        cx+=dx; cy+=dy;
+        ax+=vx[j]; ay+=vy[j];
+        if(d2 < SEP*SEP){            // only the ones that are actually too close
+          const d=Math.sqrt(d2), k2=(1-d/SEP)/d;
+          sx-=dx*k2; sy-=dy*k2;
+        }
+        if(n>26) break;
+      }
+    }
+    if(n){
+      vx[i]+=cx/n*m.coh + (ax/n-vx[i])*m.ali + sx*m.sep;
+      vy[i]+=cy/n*m.coh + (ay/n-vy[i])*m.ali + sy*m.sep;
+      lit[i]+= (Math.min(1,n/16)-lit[i])*.02;
+    } else lit[i]*=.98;
+    vx[i]+=(rnd()-.5)*.075; vy[i]+=(rnd()-.5)*.075;
+    const sp=Math.hypot(vx[i],vy[i])||1, want=m.spd;
+    vx[i]*=want/sp; vy[i]*=want/sp;
+    px[i]=(px[i]+vx[i]+WORLD)%WORLD;
+    py[i]=(py[i]+vy[i]+WORLD)%WORLD;
+    svx+=vx[i]; svy+=vy[i]; ssp+=Math.hypot(vx[i],vy[i]); slit+=lit[i];
+  }
+  // the order parameter: |sum of velocities| / sum of speeds.
+  // 1 = everyone going the same way. 0 = nobody agrees with anyone.
+  stat.order = ssp ? Math.hypot(svx,svy)/ssp : 0;
+  stat.spd   = ssp/N;
+  stat.lit   = slit/N;
+}
+
+// ---- where you are standing ----------------------------------------
+let zoom=1.6, zWant=1.6;
+let camx=WORLD/2, camy=WORLD/2;
+addEventListener('wheel', e=>{ e.preventDefault();
+  zWant = Math.min(9, Math.max(.5, zWant*Math.pow(1.0016, -e.deltaY)));
+}, {passive:false});
+
+// the same thing, named from five distances. none of the names is wrong.
+function label(z){
+  if(z>5)   return 'one of them';
+  if(z>2.6) return 'a few';
+  if(z>1.3) return 'a crowd';
+  if(z>.75) return 'a shape';
+  return 'nobody is doing this';
+}
+
+function draw(t){
+  zoom += (zWant-zoom)*.07;
+  // where the most of them are, by circular mean — the only honest centre
+  // a torus has. The camera goes there slowly and is always late.
+  let sx=0,sy=0,cxs=0,cys=0;
+  for(let i=0;i<N;i++){
+    const ax=px[i]/WORLD*6.2832, ay=py[i]/WORLD*6.2832;
+    sx+=Math.cos(ax); cxs+=Math.sin(ax);
+    sy+=Math.cos(ay); cys+=Math.sin(ay);
+  }
+  const tx=((Math.atan2(cxs,sx)+6.2832)%6.2832)/6.2832*WORLD;
+  const ty=((Math.atan2(cys,sy)+6.2832)%6.2832)/6.2832*WORLD;
+  camx=(camx + wrap(tx-camx)*.012 + WORLD)%WORLD;
+  camy=(camy + wrap(ty-camy)*.012 + WORLD)%WORLD;
+
+  ctx.globalCompositeOperation='source-over';
+  ctx.fillStyle='rgba(5,6,10,'+(0.1+0.16*Math.min(1,zoom))+')';
+  ctx.fillRect(0,0,W,H);
+  ctx.globalCompositeOperation='lighter';
+
+  const halfW=W/2/zoom, halfH=H/2/zoom;
+  // never let one of them fall under a pixel: a packed crowd drawn sub-pixel
+  // reads as a bright wire instead of a body
+  const r=Math.max(1.75, 1.9*zoom);
+  // the world is a torus and smaller than the far view of it, so from far
+  // enough back you are looking at the same crowd several times at once
+  const TILE = (halfW > WORLD/2 || halfH > WORLD/2) ? 1 : 0;
+  let vis=0;
+  for(let i=0;i<N;i++){
+    const bx=wrap(px[i]-camx), by=wrap(py[i]-camy);
+    const h=(tint[i]*330+15)|0;
+    ctx.fillStyle='hsla('+h+',97%,'+(20+lit[i]*22)+'%,'+(zoom>3?.85:.20)+')';
+    const a=zoom>3?Math.atan2(vy[i],vx[i]):0;
+    for(let oy=-TILE;oy<=TILE;oy++) for(let ox=-TILE;ox<=TILE;ox++){
+      const dx=bx+ox*WORLD, dy=by+oy*WORLD;
+      if(dx<-halfW-40||dx>halfW+40||dy<-halfH-40||dy>halfH+40) continue;
+      vis++;
+      const x=W/2+dx*zoom, y=H/2+dy*zoom;
+      if(zoom>3){
+        ctx.beginPath();
+        ctx.moveTo(x+Math.cos(a)*r*2.4, y+Math.sin(a)*r*2.4);
+        ctx.lineTo(x+Math.cos(a+2.5)*r*1.3, y+Math.sin(a+2.5)*r*1.3);
+        ctx.lineTo(x+Math.cos(a-2.5)*r*1.3, y+Math.sin(a-2.5)*r*1.3);
+        ctx.closePath(); ctx.fill();
+      } else {
+        ctx.beginPath(); ctx.arc(x,y,r,0,6.2832); ctx.fill();
+      }
+    }
+  }
+  stat.vis=vis;   // how many are near you — the only thing loudness follows
+}
+
+// ---- the same thing, heard ------------------------------------------
+// No melody, no pulse, no shared clock — six thousand tiny events a second
+// with nothing conducting them. Loudness is how many are near you. The bed
+// narrows as they come to agree, so the hiss walks toward a pitch it never
+// reaches. Applause from very far away, which is the only common sound made
+// entirely of small independent decisions.
+const audio = (() => {
+  let ac=null, master=null, bed=null, bedF=null, bedG=null, grdF=null, grdG=null,
+      buf=null, timer=null, an=null;
+  let on=false;
+
+  function noiseBuffer(ctx){
+    const n=ctx.sampleRate*2, b=ctx.createBuffer(1,n,ctx.sampleRate), d=b.getChannelData(0);
+    let b0=0,b1=0,b2=0;                      // a cheap pink-ish tilt
+    for(let i=0;i<n;i++){
+      const w=Math.random()*2-1;
+      b0=.99765*b0+w*.0990460; b1=.96300*b1+w*.2965164; b2=.57000*b2+w*1.0526913;
+      d[i]=(b0+b1+b2+w*.1848)*.42;
+    }
+    return b;
+  }
+
+  function start(){
+    if(ac) return;
+    ac = new (window.AudioContext||window.webkitAudioContext)();
+    buf = noiseBuffer(ac);
+    master = ac.createGain(); master.gain.value=0;
+    an = ac.createAnalyser(); an.fftSize=1024;
+    master.connect(an); an.connect(ac.destination);
+
+    bed = ac.createBufferSource(); bed.buffer=buf; bed.loop=true;
+
+    // the ground. broadband, low, always there. this is the field itself —
+    // it tracks how many are near you and nothing else, and it never narrows.
+    grdF = ac.createBiquadFilter(); grdF.type='lowpass'; grdF.frequency.value=620; grdF.Q.value=.4;
+    grdG = ac.createGain(); grdG.gain.value=0;
+    bed.connect(grdF); grdF.connect(grdG); grdG.connect(master);
+
+    // the voice. the same noise, narrowed by how much they agree, and it is
+    // ADDED to the ground rather than replacing it: when they fall into step a
+    // tone gathers over the water instead of draining it.
+    bedF = ac.createBiquadFilter(); bedF.type='bandpass'; bedF.frequency.value=320; bedF.Q.value=.7;
+    bedG = ac.createGain(); bedG.gain.value=0;
+    bed.connect(bedF); bedF.connect(bedG); bedG.connect(master);
+    bed.start();
+
+    master.gain.linearRampToValueAtTime(.34, ac.currentTime+5);
+    on=true;
+    timer=setInterval(schedule, 70);
+  }
+
+  // grains are scheduled ahead in small batches — one node per frame would
+  // put the crowd on the frame clock, and the whole point is that it has none
+  function schedule(){
+    if(!ac) return;
+    const now=ac.currentTime, span=.09;
+    const dens=Math.min(1, stat.vis/900);
+    const ord=stat.order;
+
+    // ground: the water. loudness and depth from how many are near, only.
+    grdG.gain.setTargetAtTime(.10+.30*dens, now, .35);
+    grdF.frequency.setTargetAtTime(380 + 520*dens, now, 1.1);
+
+    // voice: present only to the degree they agree, and narrow in proportion.
+    // measured, not guessed: the order parameter actually lives between about
+    // .55 and .85, so the raw value is rescaled to that range — otherwise the
+    // tone is always most of the way there and can never arrive.
+    const k=Math.max(0,(ord-.5)*2.6);
+    bedG.gain.setTargetAtTime(.008 + .30*k*k, now, .45);
+    bedF.Q.setTargetAtTime(.6 + 30*k*k, now, .6);
+    bedF.frequency.setTargetAtTime(220 + 560*stat.spd + 420*k, now, .8);
+
+    let count = 2 + Math.round(26*dens);
+    // when they agree, grains arrive in clumps: the texture walks toward a
+    // rhythm and never gets there
+    const clump = ord>.45;
+    for(let k=0;k<count;k++){
+      const t0 = now + (clump ? (Math.random()<.5 ? Math.random()*span*.25 : Math.random()*span)
+                              : Math.random()*span);
+      const src=ac.createBufferSource(); src.buffer=buf;
+      src.playbackRate.value=.7+Math.random()*1.4;
+      const f=ac.createBiquadFilter(); f.type='bandpass';
+      f.frequency.value=380 + Math.random()*2600*(0.25+stat.lit);
+      f.Q.value=3+Math.random()*9;
+      const g=ac.createGain();
+      const pan=ac.createStereoPanner(); pan.pan.value=Math.random()*2-1;
+      const amp=.13+.24*Math.random();
+      const dur=.012+Math.random()*.05;
+      g.gain.setValueAtTime(0,t0);
+      g.gain.linearRampToValueAtTime(amp,t0+dur*.18);
+      g.gain.exponentialRampToValueAtTime(.0001,t0+dur);
+      src.connect(f); f.connect(g); g.connect(pan); pan.connect(master);
+      src.start(t0, Math.random()*1.9);   // when to sound, where to read from
+      src.stop(t0+dur+.01);
+    }
+  }
+
+  return {
+    start, isOn:()=>on,
+    // for a maker who cannot hear it: the only honest check available
+    rms(){ if(!an) return 0; const a=new Float32Array(an.fftSize); an.getFloatTimeDomainData(a);
+           let s=0; for(let i=0;i<a.length;i++) s+=a[i]*a[i]; return Math.sqrt(s/a.length); },
+    spectrum(){ if(!an) return null; const a=new Uint8Array(an.frequencyBinCount);
+                an.getByteFrequencyData(a); return a; }
+  };
+})();
+window.__audio=audio; window.__stat=stat;
+
+const hud=document.getElementById('hud'), sc=document.getElementById('scale');
+setTimeout(()=>{hud.classList.add('on');sc.classList.add('on');document.getElementById('backLink').classList.add('on');},3500);
+let lastLabel='';
+
+hud.textContent='click to hear them · scroll to change how close you are standing';
+function wake(){
+  if(audio.isOn()) return;
+  audio.start();
+  hud.textContent='scroll to change how close you are standing';
+}
+addEventListener('pointerdown', wake);
+addEventListener('keydown', wake);
+
+function frame(now){
+  const t=now-t0;
+  step(t); draw(t);
+  const L=label(zoom);
+  if(L!==lastLabel){ lastLabel=L; sc.textContent=L; }
+  requestAnimationFrame(frame);
+}
+resize();
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

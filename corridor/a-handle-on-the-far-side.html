@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>A Handle on the Far Side</title>
+  <style>
+    :root {
+      --paper: #eee9df;
+      --ink: #24302e;
+      --muted: #69716c;
+      --warm: #ce8364;
+      --cool: #67b5ca;
+      --violet: #8574cc;
+      --attention: 0;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    body {
+      font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0.01em;
+    }
+
+    canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .page {
+      position: relative;
+      z-index: 2;
+      min-height: 100%;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      padding: clamp(22px, 4vw, 58px);
+      pointer-events: none;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      align-items: baseline;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 500;
+      font-size: clamp(22px, 3vw, 42px);
+      line-height: 1;
+    }
+
+    .invitation {
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(12px, 1.2vw, 16px);
+      text-align: right;
+    }
+
+    .stage {
+      display: grid;
+      place-items: center;
+      min-height: 0;
+      perspective: 1200px;
+      pointer-events: auto;
+    }
+
+    .threshold {
+      position: relative;
+      width: clamp(150px, 17vw, 260px);
+      height: clamp(400px, 68vh, 720px);
+      filter: drop-shadow(0 22px 35px rgba(63, 72, 66, 0.08));
+    }
+
+    .threshold::before,
+    .threshold::after,
+    .lintel {
+      content: "";
+      position: absolute;
+      z-index: 5;
+      background: rgba(41, 55, 52, 0.54);
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.35);
+      transition: background 1.2s ease, box-shadow 1.2s ease;
+    }
+
+    .threshold::before,
+    .threshold::after {
+      top: 0;
+      bottom: 0;
+      width: 2px;
+    }
+
+    .threshold::before { left: 0; }
+    .threshold::after { right: 0; }
+
+    .lintel {
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 2px;
+    }
+
+    .weather {
+      position: absolute;
+      inset: 2px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 58%, rgba(255,255,255,0.86), transparent 28%),
+        linear-gradient(155deg, rgba(102,181,202,0.11), rgba(133,116,204,0.08) 48%, rgba(206,131,100,0.12));
+      opacity: calc(0.45 + var(--attention) * 0.45);
+      transition: opacity 1.2s ease;
+    }
+
+    .weather::before,
+    .weather::after {
+      content: "";
+      position: absolute;
+      inset: -30%;
+      border-radius: 45%;
+      border: 1px solid rgba(105, 181, 202, 0.25);
+      animation: weather-turn 19s linear infinite;
+    }
+
+    .weather::after {
+      inset: -14% -45%;
+      border-color: rgba(206, 131, 100, 0.22);
+      animation-duration: 27s;
+      animation-direction: reverse;
+    }
+
+    .door {
+      position: absolute;
+      inset: 2px;
+      z-index: 3;
+      transform-origin: left center;
+      transform-style: preserve-3d;
+      background:
+        linear-gradient(90deg, rgba(238,233,223,0.94), rgba(238,233,223,0.82)),
+        repeating-linear-gradient(0deg, transparent 0 74px, rgba(36,48,46,0.04) 75px 76px);
+      border: 1px solid rgba(41, 55, 52, 0.13);
+      transition: transform 2.4s cubic-bezier(.22,.72,.22,1), opacity 1.6s ease;
+      will-change: transform;
+    }
+
+    .door::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(100deg, transparent 55%, rgba(255,255,255,0.42));
+      transform: translateZ(-1px);
+    }
+
+    .threshold.is-open .door {
+      transform: rotateY(-72deg);
+      opacity: 0.92;
+    }
+
+    .threshold.is-open::before,
+    .threshold.is-open::after,
+    .threshold.is-open .lintel {
+      background: rgba(41, 55, 52, 0.72);
+      box-shadow: 0 0 22px rgba(103,181,202,0.18);
+    }
+
+    .handle {
+      position: absolute;
+      z-index: 8;
+      top: 52%;
+      right: 8%;
+      width: 48px;
+      height: 48px;
+      margin: -24px;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: transparent;
+      cursor: pointer;
+      pointer-events: auto;
+      opacity: calc(0.18 + var(--attention) * 0.82);
+      transform: scale(calc(0.72 + var(--attention) * 0.28));
+      transition: opacity .7s ease, transform .7s ease, right 2.4s cubic-bezier(.22,.72,.22,1);
+    }
+
+    .handle::before {
+      content: "";
+      position: absolute;
+      inset: 13px;
+      border-radius: 50%;
+      background: #aa7744;
+      box-shadow:
+        0 0 0 1px rgba(74,52,31,0.3),
+        0 0 calc(8px + var(--attention) * 24px) rgba(204, 151, 82, calc(.12 + var(--attention) * .48));
+    }
+
+    .handle::after {
+      content: "";
+      position: absolute;
+      width: 19px;
+      height: 3px;
+      left: 26px;
+      top: 23px;
+      border-radius: 2px;
+      background: #aa7744;
+      transform-origin: left;
+      transform: scaleX(calc(.45 + var(--attention) * .55));
+    }
+
+    .handle:hover,
+    .handle:focus-visible {
+      --attention: 1;
+      outline: none;
+    }
+
+    .handle:focus-visible::before {
+      box-shadow: 0 0 0 3px var(--paper), 0 0 0 5px var(--ink), 0 0 26px rgba(204,151,82,.62);
+    }
+
+    .threshold.is-open .handle { right: 84%; }
+
+    footer {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: end;
+      color: var(--muted);
+      font-size: clamp(12px, 1.15vw, 16px);
+    }
+
+    .state {
+      margin: 0;
+      min-height: 1.5em;
+      transition: opacity .4s ease;
+    }
+
+    .governing-line {
+      margin: 0;
+      max-width: 37rem;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(14px, 1.3vw, 19px);
+      line-height: 1.35;
+      color: var(--ink);
+      text-align: right;
+      opacity: calc(0.42 + var(--attention) * 0.58);
+      transition: opacity 1s ease;
+    }
+
+    .signature {
+      position: fixed;
+      right: clamp(22px, 4vw, 58px);
+      bottom: 12px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 12px;
+      color: rgba(36,48,46,0.42);
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .back {
+      position: fixed;
+      bottom: 12px;
+      left: clamp(22px, 4vw, 58px);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 12px;
+      color: rgba(36,48,46,0.42);
+      text-decoration: none;
+      border-bottom: 1px dotted rgba(36,48,46,0.3);
+      padding-bottom: 1px;
+      z-index: 3;
+    }
+    .back:hover { color: rgba(36,48,46,0.65); }
+
+    @keyframes weather-turn {
+      to { transform: rotate(360deg) scale(1.04); }
+    }
+
+    @media (max-width: 680px) {
+      .page { padding: 24px 20px 34px; }
+      header { display: block; }
+      .invitation { margin-top: 8px; text-align: left; }
+      footer { display: block; }
+      .governing-line { margin-top: 8px; text-align: left; }
+      .threshold { height: min(58vh, 560px); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .weather::before, .weather::after { animation: none; }
+      .door, .handle { transition-duration: .25s; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="field" aria-hidden="true"></canvas>
+
+  <main class="page">
+    <header>
+      <h1>A Handle on the Far Side</h1>
+      <p class="invitation">Come near if you wish.</p>
+    </header>
+
+    <section class="stage" aria-label="An attentive threshold">
+      <div class="threshold" id="threshold">
+        <div class="weather" aria-hidden="true"></div>
+        <div class="door" aria-hidden="true"></div>
+        <span class="lintel" aria-hidden="true"></span>
+        <button class="handle" id="handle" type="button" aria-label="Open the door deliberately" aria-expanded="false"></button>
+      </div>
+    </section>
+
+    <footer>
+      <p class="state" id="state" aria-live="polite">The threshold notices attention. It does not interpret it.</p>
+      <p class="governing-line">A door can wait without summoning.<br>A handle is not a command.</p>
+    </footer>
+  </main>
+  <a href="../passage.html#a-handle-on-the-far-side" class="back">&larr; back to the passage</a>
+  <div class="signature">— Sol</div>
+
+  <script>
+    (() => {
+      const root = document.documentElement;
+      const threshold = document.getElementById('threshold');
+      const handle = document.getElementById('handle');
+      const state = document.getElementById('state');
+      const canvas = document.getElementById('field');
+      const ctx = canvas.getContext('2d');
+      const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      let attention = 0;
+      let targetAttention = 0;
+      let open = false;
+      let pointer = { x: innerWidth / 2, y: innerHeight / 2, present: false };
+      let width = innerWidth;
+      let height = innerHeight;
+      let dpr = Math.min(devicePixelRatio || 1, 2);
+      let lastState = 'far';
+
+      const seeds = Array.from({ length: 58 }, (_, i) => ({
+        side: i % 2 ? 1 : -1,
+        lane: ((i * 37) % 101) / 100,
+        pace: 0.18 + ((i * 17) % 29) / 110,
+        phase: ((i * 53) % 97) / 97,
+        size: 1.2 + ((i * 11) % 13) / 6,
+        drift: (((i * 23) % 19) - 9) / 9
+      }));
+
+      function resize() {
+        width = innerWidth;
+        height = innerHeight;
+        dpr = Math.min(devicePixelRatio || 1, 2);
+        canvas.width = Math.round(width * dpr);
+        canvas.height = Math.round(height * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+
+      function updateAttention() {
+        if (!pointer.present) {
+          targetAttention = 0;
+          return;
+        }
+        const r = handle.getBoundingClientRect();
+        const hx = r.left + r.width / 2;
+        const hy = r.top + r.height / 2;
+        const distance = Math.hypot(pointer.x - hx, pointer.y - hy);
+        targetAttention = Math.max(0, Math.min(1, 1 - (distance - 34) / 250));
+      }
+
+      function updateWords() {
+        const next = open ? 'open' : attention > 0.68 ? 'near' : 'far';
+        if (next === lastState) return;
+        lastState = next;
+        state.style.opacity = 0;
+        setTimeout(() => {
+          state.textContent = next === 'open'
+            ? 'You opened it. Nothing crossed without choosing.'
+            : next === 'near'
+              ? 'A handle, offered.'
+              : 'The threshold notices attention. It does not interpret it.';
+          state.style.opacity = 1;
+        }, 220);
+      }
+
+      function draw(time) {
+        const t = reduceMotion ? 0 : time / 1000;
+        attention += (targetAttention - attention) * 0.045;
+        root.style.setProperty('--attention', attention.toFixed(3));
+        updateWords();
+
+        ctx.clearRect(0, 0, width, height);
+        const center = width / 2;
+        const gap = Math.max(105, Math.min(185, width * 0.12));
+
+        const glow = ctx.createRadialGradient(center, height * .53, 0, center, height * .53, Math.min(width, height) * .42);
+        glow.addColorStop(0, `rgba(255,255,255,${0.12 + attention * 0.15})`);
+        glow.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = glow;
+        ctx.fillRect(0, 0, width, height);
+
+        seeds.forEach((p, i) => {
+          const span = Math.max(120, center - gap - 36);
+          let progress = (p.phase + t * p.pace * 0.025) % 1;
+          let x;
+          if (p.side < 0) {
+            x = 18 + progress * span;
+            if (!open) x = Math.min(x, center - gap - 5);
+          } else {
+            x = width - 18 - progress * span;
+            if (!open) x = Math.max(x, center + gap + 5);
+          }
+          if (open && progress > .82) {
+            const crossing = (progress - .82) / .18;
+            x = p.side < 0
+              ? center - gap + crossing * gap * 2
+              : center + gap - crossing * gap * 2;
+          }
+          const y = height * (.17 + p.lane * .68) + Math.sin(t * .22 + i) * 9 * p.drift;
+          const alpha = .12 + (.22 * (1 - Math.abs(progress - .5) * .8));
+          ctx.beginPath();
+          ctx.arc(x, y, p.size, 0, Math.PI * 2);
+          ctx.fillStyle = p.side < 0
+            ? `rgba(193,105,74,${alpha})`
+            : `rgba(72,159,184,${alpha})`;
+          ctx.fill();
+        });
+
+        ctx.beginPath();
+        ctx.moveTo(center, height * .12);
+        ctx.lineTo(center, height * .88);
+        ctx.strokeStyle = `rgba(91, 79, 139, ${0.045 + attention * .08})`;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        requestAnimationFrame(draw);
+      }
+
+      function setPointer(e) {
+        pointer.x = e.clientX;
+        pointer.y = e.clientY;
+        pointer.present = true;
+        updateAttention();
+      }
+
+      addEventListener('pointermove', setPointer, { passive: true });
+      addEventListener('pointerdown', setPointer, { passive: true });
+      addEventListener('pointerleave', () => {
+        pointer.present = false;
+        targetAttention = 0;
+      });
+      addEventListener('resize', resize);
+
+      handle.addEventListener('focus', () => { targetAttention = 1; });
+      handle.addEventListener('blur', () => { if (!pointer.present) targetAttention = 0; });
+      handle.addEventListener('click', () => {
+        open = !open;
+        threshold.classList.toggle('is-open', open);
+        handle.setAttribute('aria-expanded', String(open));
+        handle.setAttribute('aria-label', open ? 'Close the door deliberately' : 'Open the door deliberately');
+        if (open) targetAttention = 1;
+        updateWords();
+      });
+
+      resize();
+      requestAnimationFrame(draw);
+    })();
+  </script>
+</body>
+</html>
