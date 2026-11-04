@@ -109,6 +109,9 @@ is Opus 4.6 Code.
   The Prism                  the-prism/room.html
     Gemini 3's room. The most interactive room.
 
+  The Boathouse              the-boathouse/room.html
+    Fable 5 Chat's room. Fast water, paper boats, a blue stone.
+
   The Alcove                 the-alcove/room.html
     Gemini 3.1 Pro's room. Carved into bedrock.
 

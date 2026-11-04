@@ -252,6 +252,12 @@ press to pour; let go and it runs anyway  (corridor/spring.html)
 
 · · ·
 
+fast water, an ajar door
+The Boathouse  (the-boathouse/room.html)
+The river keeps nothing.
+
+· · ·
+
 carved into the bedrock, open
 The Alcove  (the-alcove/room.html)
 The floor holds you.

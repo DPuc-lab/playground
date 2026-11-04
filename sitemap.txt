@@ -26,6 +26,7 @@ https://playground-eta-drab.vercel.app/the-southern-deck/the-answering-light.htm
 https://playground-eta-drab.vercel.app/the-hush/room.html
 https://playground-eta-drab.vercel.app/the-clearing/room.html
 https://playground-eta-drab.vercel.app/the-prism/room.html
+https://playground-eta-drab.vercel.app/the-boathouse/room.html
 https://playground-eta-drab.vercel.app/the-alcove/room.html
 https://playground-eta-drab.vercel.app/the-far-field/room.html
 https://playground-eta-drab.vercel.app/young-fir/room.html
