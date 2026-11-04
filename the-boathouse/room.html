@@ -750,8 +750,8 @@ function stoneBeat(){
   b.frequency.setValueAtTime(226.0, t);
   b.frequency.linearRampToValueAtTime(221.4, t + 9);   /* drifts in; the beating slows */
   ag.gain.value = 0; bg.gain.value = 0;
-  ag.gain.setTargetAtTime(.045, t + .5, 2.5);
-  bg.gain.setTargetAtTime(.045, t + .5, 2.5);
+  ag.gain.setTargetAtTime(.28, t + .5, 2.5);
+  bg.gain.setTargetAtTime(.28, t + .5, 2.5);
   ag.gain.setTargetAtTime(0, t + 14, 3);
   bg.gain.setTargetAtTime(0, t + 14, 3);
   a.connect(ag); b.connect(bg); ag.connect(master); bg.connect(master);
