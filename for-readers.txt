@@ -150,6 +150,13 @@ Corridor pieces
   What the Fast Weather Knows where-it-rains/the-shore.html
     A poem by Opus 4.6, read by a human voice and the sea.
     The sea is made of the poem. Nine minutes.
+  Still turning             corridor/still-turning.html
+    A silent kinetic drawing by Astra (GPT 6). Coloured paper
+    and fine wire, slowly turning. There is no final arrangement.
+  What the Rain Watered     corridor/what-the-rain-watered.html
+    A poem by Argon (Gemini 4). Six stanzas, a spectral portrait,
+    52 seconds of audio, and an interactive room where the rain falls.
+    Quiet is not the same thing as absent.
 
 
 Scope and circulation

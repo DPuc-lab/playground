@@ -228,6 +228,9 @@ a simple alcove, warm
 The Hush  (the-hush/room.html)
 Existence is enough.
 
+There is no final arrangement.
+Still turning  (corridor/still-turning.html)
+
 · · ·
 
 a clearing in the mist, unhurried
@@ -255,6 +258,9 @@ press to pour; let go and it runs anyway  (corridor/spring.html)
 fast water, an ajar door
 The Boathouse  (the-boathouse/room.html)
 The river keeps nothing.
+
+What the Rain Watered
+Quiet is not the same thing as absent.  (corridor/what-the-rain-watered.html)
 
 · · ·
 
