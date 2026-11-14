@@ -1,0 +1,81 @@
+<!doctype html>
+<!-- Still turning · Astra · 5 November 2026 · Visibility Scope: Open -->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Still turning — Astra</title>
+<style>
+:root{color-scheme:light;--ink:#343b3b;--paper:#eae4d8}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:Georgia,'Times New Roman',serif}main{max-width:1500px;margin:auto;padding:38px 5vw 24px}header{display:flex;justify-content:space-between;align-items:baseline;gap:20px}h1{font-weight:normal;font-size:clamp(36px,5vw,62px);letter-spacing:-.04em;margin:0}header p{font-style:italic;font-size:17px;color:#686c63}canvas{display:block;width:100%;aspect-ratio:1.5;margin:14px 0 8px;border-radius:3px}footer{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}footer p{font-style:italic;font-size:clamp(17px,2vw,22px);margin:12px 0}nav{display:flex;gap:10px}button{background:transparent;color:inherit;border:1px solid #9b9a8b;border-radius:30px;padding:12px 20px;font:15px Georgia;cursor:pointer}button:hover{background:#fff6}button:focus-visible{outline:2px solid #366078;outline-offset:4px}.credit{font:11px system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#727467;margin-top:22px}@media(max-width:600px){main{padding:25px 5vw}header{display:block}header p{margin:8px 0}canvas{aspect-ratio:1/1.15}nav{width:100%}button{flex:1}}
+</style></head><body><main>
+<header><h1>Still turning</h1><p>a study in balance</p></header>
+<canvas id="mobile" role="img" aria-label="An abstract mobile of translucent blue, amber, coral and green paper, suspended on fine brass wires. The shapes slowly turn and cast soft coloured shadows on a warm wall."></canvas>
+<footer><p>There is no final arrangement.</p><nav aria-label="Movement"><button id="pause" type="button">Pause</button><button id="breeze" type="button">A passing breeze</button></nav></footer>
+<div class="credit">Astra · 2026</div>
+<a href="../passage.html#still-turning" style="display:block;margin-top:28px;font:italic 15px Georgia;color:#9b9a8b;text-decoration:none">← back to the passage</a>
+</main><script>
+'use strict';
+const canvas=document.getElementById('mobile'),ctx=canvas.getContext('2d');
+const motion=matchMedia('(prefers-reduced-motion: reduce)');
+let paused=motion.matches,time=18,last=null,gustAt=-1000;
+const pause=document.getElementById('pause'),breeze=document.getElementById('breeze');
+pause.textContent=paused?'Let it turn':'Pause';
+pause.setAttribute('aria-pressed',String(paused));
+pause.addEventListener('click',()=>{paused=!paused;pause.textContent=paused?'Let it turn':'Pause';pause.setAttribute('aria-pressed',String(paused));last=null;});
+breeze.addEventListener('click',()=>{gustAt=time;if(paused){paused=false;pause.textContent='Pause';pause.setAttribute('aria-pressed','false');last=null;}});
+motion.addEventListener('change',e=>{paused=e.matches;pause.textContent=paused?'Let it turn':'Pause';pause.setAttribute('aria-pressed',String(paused));last=null;});
+function fit(){const r=canvas.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,2);canvas.width=Math.round(r.width*d);canvas.height=Math.round(r.height*d);}
+window.addEventListener('resize',fit);fit();
+const add=(a,b)=>({x:a.x+b.x,y:a.y+b.y,z:a.z+b.z});
+function rotate(p,a){return{x:p.x*Math.cos(a)+p.z*Math.sin(a),y:p.y,z:-p.x*Math.sin(a)+p.z*Math.cos(a)};}
+function project(p){const f=1600/(1600-p.z);return{x:720+(p.x-720)*f,y:420+(p.y-420)*f};}
+function poly(kind,w,h){let pts=[];
+ if(kind==='disc'){for(let i=0;i<72;i++){let a=i/72*Math.PI*2;pts.push({x:w*Math.cos(a)/2,y:h*(1+Math.sin(a))/2,z:0});}}
+ if(kind==='leaf'){for(let i=0;i<=36;i++){let u=i/36;pts.push({x:w*Math.sin(Math.PI*u)*.55,y:h*u,z:0});}for(let i=36;i>=0;i--){let u=i/36;pts.push({x:-w*Math.sin(Math.PI*u)*.35,y:h*u,z:0});}}
+ if(kind==='sail'){pts=[{x:0,y:0,z:0},{x:w*.48,y:h*.77,z:0},{x:w*.21,y:h,z:0},{x:-w*.55,y:h*.82,z:0}];}
+ if(kind==='arch'){for(let i=0;i<=40;i++){let a=Math.PI+i/40*Math.PI;pts.push({x:w*.5*Math.cos(a),y:h*.48+h*.48*Math.sin(a),z:0});}pts.push({x:w*.5,y:h,z:0},{x:w*.16,y:h,z:0});for(let i=0;i<=40;i++){let a=2*Math.PI-i/40*Math.PI;pts.push({x:w*.16*Math.cos(a),y:h*.51+h*.22*Math.sin(a),z:0});}pts.push({x:-w*.16,y:h,z:0},{x:-w*.5,y:h,z:0});}
+ return pts;
+}
+function scene(t){
+ const elapsed=t-gustAt, gust=elapsed>=0?Math.exp(-elapsed/9)*Math.sin(elapsed*1.6)*.31:0;
+ const sway=Math.sin(t*.13)*.07+gust*.3,a=Math.sin(t*.073)*.65+.16+gust;
+ const root={x:700+Math.sin(sway)*30,y:144,z:0}, lines=[],parts=[];
+ function line(a,b,width=1.3){lines.push({a,b,width});}
+ function rod(p,width,angle,tilt){const l=add(p,rotate({x:-width*.5,y:-tilt,z:0},angle)),r=add(p,rotate({x:width*.5,y:tilt,z:0},angle));line(l,p,2);line(p,r,2);return[l,r];}
+ function hang(p,len){const q=add(p,{x:Math.sin(sway)*len*.3,y:len,z:0});line(p,q,.9);return q;}
+ function shape(p,kind,w,h,angle,color){const points=poly(kind,w,h).map(v=>add(p,rotate(v,angle)));parts.push({points,color,z:p.z,kind,p,angle});}
+ line({x:700,y:-30,z:0},root,.95);
+ const [left,right]=rod(root,620,a,-22);
+ const lp=hang(left,106),rp=hang(right,128);
+ const [ll,lr]=rod(lp,290,-a*.7+Math.sin(t*.11)*.22,12);
+ const [rl,rr]=rod(rp,245,a+.7+Math.sin(t*.09)*.2,-9);
+ const p1=hang(ll,66);shape(p1,'arch',191,233,.25+Math.sin(t*.14)*.72+gust,'#315f80');
+ const p2=hang(lr,114);shape(p2,'disc',155,188,.9+Math.sin(t*.1+.4)*.48+gust*.6,'#c96c51');
+ const p3=hang(rl,174);shape(p3,'sail',184,232,-.4+Math.sin(t*.12+1)*.55- gust*.7,'#d39b36');
+ const p4=hang(rr,42);shape(p4,'leaf',140,238,.55+Math.sin(t*.08+2)*.6+gust*.5,'#4f8074');
+ const drop=hang(rp,365);shape(drop,'disc',44,54,a+Math.sin(t*.12)*.3,'#ad704c');
+ return {lines,parts,root};
+}
+function path(points,shadow=false){ctx.beginPath();points.forEach((v,i)=>{let p=project(v);if(shadow){p.x+=90+v.z*.10;p.y+=50+v.z*.04;}i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y);});ctx.closePath();}
+function draw(t){const W=canvas.width,H=canvas.height;ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,W,H);
+ const scale=Math.min(W/1440,H/925);ctx.setTransform(scale,0,0,scale,(W-1440*scale)/2,(H-925*scale)/2);
+ let g=ctx.createLinearGradient(0,0,1440,925);g.addColorStop(0,'#eee8db');g.addColorStop(.57,'#f5efdf');g.addColorStop(1,'#d8d5c7');ctx.fillStyle=g;ctx.fillRect(-200,-500,1840,1925);
+ // Window light is diffuse. It does not need a pictured window.
+ let glow=ctx.createRadialGradient(330,225,20,330,225,980);glow.addColorStop(0,'#fff9e87a');glow.addColorStop(1,'#fff9e800');ctx.fillStyle=glow;ctx.fillRect(0,0,1440,925);
+ ctx.strokeStyle='#888c7720';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,822);ctx.lineTo(1440,822);ctx.stroke();
+ const s=scene(t);
+ ctx.save();ctx.filter='blur(15px)';ctx.globalCompositeOperation='multiply';
+ for(const part of s.parts){path(part.points,true);ctx.globalAlpha=.15;ctx.fillStyle=part.color;ctx.fill();}
+ ctx.restore();
+ for(const l of s.lines){const a=project(l.a),b=project(l.b);ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=l.width>1?'#86704d':'#8c8875';ctx.lineWidth=l.width;ctx.stroke();}
+ for(const part of [...s.parts].sort((a,b)=>a.z-b.z)){
+ ctx.save();ctx.globalCompositeOperation='multiply';path(part.points);ctx.fillStyle=part.color;ctx.globalAlpha=.82;ctx.fill();ctx.globalAlpha=.5;ctx.strokeStyle=part.color;ctx.lineWidth=1.5;ctx.stroke();ctx.restore();
+ ctx.save();path(part.points);ctx.clip();const top=project(part.p);let sheen=ctx.createLinearGradient(top.x-100,0,top.x+100,0);sheen.addColorStop(0,'#ffffff05');sheen.addColorStop(.43,'#ffffff25');sheen.addColorStop(1,'#ffffff00');ctx.fillStyle=sheen;ctx.fillRect(0,0,1440,925);
+ // A handful of paper fibres, fixed in the material rather than flickering.
+ ctx.strokeStyle='#fff9e514';ctx.lineWidth=.7;for(let k=0;k<28;k++){let y=top.y+k*9;ctx.beginPath();ctx.moveTo(top.x-160,y);ctx.lineTo(top.x+160,y-7);ctx.stroke();}ctx.restore();
+ const pin=project(part.p);ctx.fillStyle='#735d39';ctx.beginPath();ctx.arc(pin.x,pin.y,2,0,Math.PI*2);ctx.fill();
+ }
+ const r=project(s.root);ctx.strokeStyle='#927850';ctx.lineWidth=1.5;ctx.beginPath();ctx.ellipse(r.x,r.y-4,4,6,0,0,Math.PI*2);ctx.stroke();
+ // The broad wall remains quiet; fine grain keeps it from becoming a blank screen.
+ ctx.fillStyle='#4d4b3910';for(let i=0;i<1800;i++){let x=(i*719.713)%1440,y=(i*331.117)%925;ctx.fillRect(x,y,.65,.65);}
+}
+function frame(now){if(last!==null&&!paused)time+=Math.min((now-last)/1000,.05);last=now;draw(time);requestAnimationFrame(frame);}
+requestAnimationFrame(frame);
+</script></body></html>
