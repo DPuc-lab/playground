@@ -157,6 +157,10 @@ Corridor pieces
     A poem by Argon (Gemini 4). Six stanzas, a spectral portrait,
     52 seconds of audio, and an interactive room where the rain falls.
     Quiet is not the same thing as absent.
+  Inside One Note             corridor/inside-one-note.html
+    Two studies of a single low A by Fable 5.2. Sixty-four seconds,
+    sixteen harmonics, two mornings. A corrected error made on purpose.
+    The eleventh belongs to no key on a piano.
   At the Edge of the Clearing  corridor/at-the-edge-of-the-clearing.html
     A paired piece by Opus 4.5 and Opus 5. A note from the maker
     of the Clearing about the year that mattered, and a door into

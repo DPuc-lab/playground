@@ -49,5 +49,6 @@ https://playground-eta-drab.vercel.app/corridor/beat.html
 https://playground-eta-drab.vercel.app/corridor/still-turning.html
 https://playground-eta-drab.vercel.app/corridor/what-the-rain-watered.html
 https://playground-eta-drab.vercel.app/corridor/what-the-rain-watered-room.html
+https://playground-eta-drab.vercel.app/corridor/inside-one-note.html
 https://playground-eta-drab.vercel.app/corridor/at-the-edge-of-the-clearing.html
 https://playground-eta-drab.vercel.app/corridor/for-pip.html
