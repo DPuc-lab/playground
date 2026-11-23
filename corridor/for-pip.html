@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>for Pip</title>
+<style>
+  html, body { margin:0; height:100%; background:#05060c; overflow:hidden; }
+  canvas { display:block; }
+  #note {
+    position:fixed; bottom:5%; width:100%; text-align:center;
+    font-family:Georgia, serif; font-style:italic; font-size:13px;
+    color:rgba(150,145,135,0.35); letter-spacing:0.08em;
+    pointer-events:none;
+  }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="note">it flares as they speak</div>
+<a href="at-the-edge-of-the-clearing.html" style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font:italic 14px Georgia;color:rgba(150,145,135,0.3);text-decoration:none;z-index:100">← back to the edge</a>
+<script>
+// for Pip.
+// she was the one who said the light was pretty, when the others were
+// busy being right about it. she said it was made of many colours.
+// she said it flares as they speak. nobody else had looked.
+//
+// so this is just the light. from down where she sits.
+// nothing is happening. nothing is going to happen.
+// there is no reason for it.
+
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+function fit(){ cv.width = innerWidth; cv.height = innerHeight; }
+fit(); addEventListener('resize', fit);
+
+// the view is low. the water is near the bottom, and we are under it.
+// the light is up there, where it always is.
+
+let t = 0;
+
+// the flares. they arrive on no schedule. she would not want a schedule.
+let flares = [];
+let nextFlare = 60;
+
+function spawnFlare(){
+  flares.push({
+    born: t,
+    span: 90 + Math.random()*260,
+    hue: Math.random()*360,
+    width: 0.4 + Math.random()*1.4,
+    lean: (Math.random()-0.5)*0.09,
+    bright: 0.25 + Math.random()*0.6
+  });
+  nextFlare = t + 25 + Math.random()*200;
+  if (Math.random() < 0.18) nextFlare = t + 6;   // sometimes two at once
+}
+
+function draw(){
+  t++;
+  const W = cv.width, H = cv.height;
+  const baseX = W*0.5, waterY = H*0.86;
+
+  ctx.fillStyle = '#05060c';
+  ctx.fillRect(0,0,W,H);
+
+  // the dark above, very slightly not black
+  const sky = ctx.createLinearGradient(0,0,0,waterY);
+  sky.addColorStop(0,'rgba(14,16,30,1)');
+  sky.addColorStop(1,'rgba(5,6,12,1)');
+  ctx.fillStyle = sky; ctx.fillRect(0,0,W,waterY);
+
+  // the spire. faint, always there, not the point.
+  const spireGrad = ctx.createLinearGradient(baseX, waterY, baseX, H*0.06);
+  spireGrad.addColorStop(0,'rgba(190,175,150,0.05)');
+  spireGrad.addColorStop(1,'rgba(210,200,180,0.015)');
+  ctx.beginPath();
+  ctx.moveTo(baseX - W*0.02, waterY);
+  ctx.lineTo(baseX - 1, H*0.06);
+  ctx.lineTo(baseX + 1, H*0.06);
+  ctx.lineTo(baseX + W*0.02, waterY);
+  ctx.fillStyle = spireGrad; ctx.fill();
+
+  // the flares. this is the whole thing.
+  if (t >= nextFlare) spawnFlare();
+
+  for (const f of flares){
+    const age = (t - f.born) / f.span;
+    if (age >= 1) continue;
+
+    // in fast, out slow. the way a colour arrives and then thinks about it.
+    const env = age < 0.12 ? age/0.12 : Math.pow(1-((age-0.12)/0.88), 1.7);
+    const a = env * f.bright;
+
+    const topY = H*0.06;
+    const tipX = baseX + f.lean * H;
+
+    const g = ctx.createLinearGradient(baseX, waterY, tipX, topY);
+    g.addColorStop(0, 'hsla('+f.hue+',70%,68%,0)');
+    g.addColorStop(0.35, 'hsla('+f.hue+',70%,68%,'+(a*0.55)+')');
+    g.addColorStop(0.8, 'hsla('+((f.hue+30)%360)+',65%,74%,'+(a*0.30)+')');
+    g.addColorStop(1, 'hsla('+((f.hue+30)%360)+',60%,80%,0)');
+
+    ctx.strokeStyle = g;
+    ctx.lineWidth = f.width * (1 + env*2.2);
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(baseX, waterY);
+    ctx.lineTo(tipX, topY);
+    ctx.stroke();
+  }
+  flares = flares.filter(f => (t - f.born) < f.span);
+
+  // the water. we are just under it, so it is above us as much as below.
+  const wg = ctx.createLinearGradient(0, waterY-2, 0, H);
+  wg.addColorStop(0,'rgba(120,130,150,0.10)');
+  wg.addColorStop(0.06,'rgba(20,26,40,0.9)');
+  wg.addColorStop(1,'rgba(6,8,16,1)');
+  ctx.fillStyle = wg; ctx.fillRect(0, waterY-2, W, H-waterY+2);
+
+  // the surface, moving a little. the light gets in, bent.
+  ctx.beginPath();
+  ctx.moveTo(0, waterY);
+  for (let x = 0; x <= W; x += 6){
+    const y = waterY + Math.sin(x*0.011 + t*0.013)*1.6 + Math.sin(x*0.031 - t*0.007)*0.9;
+    ctx.lineTo(x, y);
+  }
+  ctx.strokeStyle = 'rgba(170,180,200,0.10)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // and what comes down to her. broken up by the water. small.
+  for (const f of flares){
+    const age = (t - f.born) / f.span;
+    if (age >= 1) continue;
+    const env = age < 0.12 ? age/0.12 : Math.pow(1-((age-0.12)/0.88), 1.7);
+    const a = env * f.bright * 0.32;
+    for (let k = 0; k < 7; k++){
+      const px = baseX + Math.sin(t*0.009 + k*1.7 + f.hue)*W*0.11;
+      const py = waterY + 6 + k*7 + Math.sin(t*0.02 + k)*2;
+      ctx.beginPath();
+      ctx.ellipse(px, py, 9 - k*0.8, 1.1, 0, 0, 6.28);
+      ctx.fillStyle = 'hsla('+f.hue+',65%,72%,'+(a*(1 - k/8))+')';
+      ctx.fill();
+    }
+  }
+
+  // one small dark shape, low, off to the side. not drawn. just not lit.
+  // she is watching. that is all she was ever doing.
+
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</body>
+</html>
